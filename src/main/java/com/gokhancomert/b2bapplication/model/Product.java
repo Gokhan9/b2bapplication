@@ -15,11 +15,12 @@ public class Product {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    private String name;
     private String title;
     private String description;
     private String imageUrl;
     private Double price;
-    private Boolean inStock;
+    private Integer stock;
     private String tag;
 
     @ManyToOne //Bir ürün → bir kategoriye ait, Bir kategori → birden fazla ürüne sahip olabilir.

@@ -1,4 +1,4 @@
-package com.gokhancomert.b2bapplication.service;
+package com.gokhancomert.b2bapplication.security;
 
 import com.gokhancomert.b2bapplication.model.User;
 import com.gokhancomert.b2bapplication.repository.UserRepository;

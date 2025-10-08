@@ -1,6 +1,5 @@
 package com.gokhancomert.b2bapplication.security;
 
-import com.gokhancomert.b2bapplication.service.CustomUserDetailsService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
