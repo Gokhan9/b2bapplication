@@ -1,46 +1,66 @@
 package com.gokhancomert.b2bapplication.service;
 
+import com.gokhancomert.b2bapplication.dto.ProductDto;
+import com.gokhancomert.b2bapplication.mapper.ProductMapper;
+import com.gokhancomert.b2bapplication.model.Category;
 import com.gokhancomert.b2bapplication.model.Product;
+import com.gokhancomert.b2bapplication.repository.CategoryRepository;
 import com.gokhancomert.b2bapplication.repository.ProductRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class ProductService {
 
     private final ProductRepository productRepository;
-    public ProductService(ProductRepository productRepository) {
+    private final CategoryRepository categoryRepository;
+    private final ProductMapper productMapper;
+
+    public ProductService(ProductRepository productRepository, CategoryRepository categoryRepository, ProductMapper productMapper) {
         this.productRepository = productRepository;
+        this.categoryRepository = categoryRepository;
+        this.productMapper = productMapper;
     }
 
-    // Tüm Ürünleri Listeler
-    public List<Product> getAllProducts() {
-        return productRepository.findAll();
+    public List<ProductDto> findAll() {
+        return productRepository.findAll()
+                .stream()
+                .map(productMapper::toDto)
+                .collect(Collectors.toList());
     }
 
-    // ID ile ürün getirir.
-    public Product getProductById(Long id) {
-        return productRepository.findById(id).orElse(null);
+    public ProductDto findByProductId(Long id) {
+        return productRepository.findById(id)
+                .map(productMapper::toDto)
+                .orElseThrow(() -> new RuntimeException("Product not found with id: " + id));
     }
 
-    // Ürünleri Kategori'de ki ID'ye göre getirir/filtreler.
-    public List<Product> getProductCategoryById(Long categoryId) {
-        return productRepository.findByCategoryId(categoryId);
+    public ProductDto createProduct(ProductDto productDto) {
+        Category category = categoryRepository.findById(productDto.getCategoryId())
+                .orElseThrow(() -> new RuntimeException("Category not found with id: " + productDto.getCategoryId()));
+        Product product = productMapper.toEntity(productDto, category);
+        return productMapper.toDto(productRepository.save(product));
     }
 
-    // Başlık içerisinde "Arama"
-    public List<Product> search(String keyword) {
-        return productRepository.findByTitleContainingIgnoreCase(keyword);
+    public ProductDto updateProduct(Long id, ProductDto productDto) {
+        Product product = productRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Product not found with id: " + id));
+
+        Category category = categoryRepository.findById(productDto.getCategoryId())
+                .orElseThrow(() -> new RuntimeException("Category not found with id: " + productDto.getCategoryId()));
+
+        product.setName(productDto.getName());
+        product.setDescription(productDto.getDescription());
+        product.setPrice(productDto.getPrice());
+        product.setStock(productDto.getStock());
+        product.setImageUrl(productDto.getImageUrl());
+        product.setCategory(category);
+        return productMapper.toDto(productRepository.save(product));
     }
 
-    //yeni ürünleri kaydet.
-    public Product saveProduct(Product product) {
-        return productRepository.save(product);
-    }
-
-    //Ürün sil
-    public void deleteProduct(Long id) {
+    public void deleteProductById(Long id) {
         productRepository.deleteById(id);
     }
 }

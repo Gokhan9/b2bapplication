@@ -1,5 +1,6 @@
 package com.gokhancomert.b2bapplication.controller;
 
+import com.gokhancomert.b2bapplication.dto.ProductDto;
 import com.gokhancomert.b2bapplication.model.Product;
 import com.gokhancomert.b2bapplication.service.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,29 +18,29 @@ public class ProductController {
         this.productService = productService;
     }
 
-    // Tüm Ürünleri Listeler.
     @GetMapping
-    public List<Product> getProducts() {
-        return productService.getAllProducts();
+    public List<ProductDto> findAll() {
+        return productService.findAll();
     }
 
-    // Ürünleri ID'ye göre Listeler.
     @GetMapping("/{id}")
-    public Product getById(@PathVariable Long id) {
-        return productService.getProductById(id);
+    public ProductDto findByProductId(@PathVariable Long id) {
+        return productService.findByProductId(id);
     }
 
-    // Ürünleri kategori id'sine göre filtreleme
-    @GetMapping("/category/{category_id}")
-    public List<Product> getProductCategoryById(@PathVariable Long categoryId) {
-        return productService.getProductCategoryById(categoryId);
+    @PostMapping
+    public ProductDto createProduct(@RequestBody ProductDto productDto) {
+        return productService.createProduct(productDto);
     }
 
-    // Arama
-    @GetMapping("/search")
-    public List<Product> search(@RequestParam String search) {
-        return productService.search(search);
+    @PutMapping("/{id}")
+    public ProductDto updateProduct(@PathVariable Long id, @RequestBody ProductDto productDto) {
+        return productService.updateProduct(id, productDto);
     }
 
+    @DeleteMapping("/{id}")
+    public void deleteProduct(@PathVariable Long id) {
+        productService.deleteProductById(id);
+    }
 
 }

@@ -1,9 +1,9 @@
 package com.gokhancomert.b2bapplication.controller;
 
-import com.gokhancomert.b2bapplication.dto.mapper.UserMapper;
-import com.gokhancomert.b2bapplication.dto.request.UserLoginRequest;
-import com.gokhancomert.b2bapplication.dto.request.UserRegisterRequest;
-import com.gokhancomert.b2bapplication.dto.response.UserResponse;
+import com.gokhancomert.b2bapplication.mapper.UserMapper;
+import com.gokhancomert.b2bapplication.request.UserLoginRequest;
+import com.gokhancomert.b2bapplication.request.UserRegisterRequest;
+import com.gokhancomert.b2bapplication.response.UserResponse;
 import com.gokhancomert.b2bapplication.model.User;
 import com.gokhancomert.b2bapplication.repository.UserRepository;
 import com.gokhancomert.b2bapplication.security.JwtUtil;

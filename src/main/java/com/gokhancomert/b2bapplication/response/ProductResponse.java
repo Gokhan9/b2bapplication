@@ -1,4 +1,4 @@
-package com.gokhancomert.b2bapplication.dto.response;
+package com.gokhancomert.b2bapplication.response;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

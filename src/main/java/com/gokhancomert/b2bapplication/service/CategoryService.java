@@ -1,37 +1,54 @@
 package com.gokhancomert.b2bapplication.service;
 
+import com.gokhancomert.b2bapplication.dto.CategoryDto;
+import com.gokhancomert.b2bapplication.mapper.CategoryMapper;
 import com.gokhancomert.b2bapplication.model.Category;
 import com.gokhancomert.b2bapplication.repository.CategoryRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class CategoryService {
 
     private final CategoryRepository categoryRepository;
+    private final CategoryMapper categoryMapper;
 
-    public CategoryService(CategoryRepository categoryRepository) {
+    public CategoryService(CategoryRepository categoryRepository, CategoryMapper categoryMapper) {
         this.categoryRepository = categoryRepository;
+        this.categoryMapper = categoryMapper;
     }
 
-    // Listelenen kategorileri getir.
-    public List<Category> findAll() {
-        return categoryRepository.findAll();
+    public List<CategoryDto> findAll() {
+        return categoryRepository.findAll()
+                .stream()
+                .map(categoryMapper::toDto)
+                .collect(Collectors.toList());
     }
 
-    // ID ile Kategori bul.
-    public Category getCategoryById(Long id) {
-        return categoryRepository.findById(id).orElse(null);
+    public CategoryDto getCategoryById(Long id) {
+        return categoryRepository.findById(id)
+                .map(categoryMapper::toDto)
+                .orElseThrow(() -> new RuntimeException("Category not found with id: " + id));
     }
 
-    // Kategoriyi Kaydet
-    public Category saveAllCategory(Category category) {
-        return categoryRepository.save(category);
+    //oluştur
+    public CategoryDto createCategory(CategoryDto categoryDto) {
+        Category category = new Category();
+        return categoryMapper.toDto(categoryRepository.save(category));
     }
 
-    // Kategoriyi Sil
-    public void deleteAllCategory(Long id) {
+    //güncelle
+    public CategoryDto updateCategory(Long id, CategoryDto categoryDto) {
+        Category category = categoryRepository.findById(id)
+                .orElseThrow(()  -> new RuntimeException("Category not found with id: " + id));
+        category.setName(categoryDto.getName());
+        return categoryMapper.toDto(categoryRepository.save(category));
+    }
+
+    public void deleteCategory(Long id) {
         categoryRepository.deleteById(id);
     }
+
 }

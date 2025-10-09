@@ -1,11 +1,9 @@
 package com.gokhancomert.b2bapplication.controller;
 
+import com.gokhancomert.b2bapplication.dto.CategoryDto;
 import com.gokhancomert.b2bapplication.model.Category;
 import com.gokhancomert.b2bapplication.service.CategoryService;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -20,12 +18,27 @@ public class CategoryController {
     }
 
     @GetMapping
-    public List<Category> getAllCategories() {
+    public List<CategoryDto> getAllCategories() {
         return categoryService.findAll();
     }
 
     @GetMapping("/{id}")
-    public Category getCategoryById(@PathVariable Long id) {
+    public CategoryDto getCategoryById(@PathVariable Long id) {
         return categoryService.getCategoryById(id);
+    }
+
+    @PostMapping
+    public CategoryDto createCategory(@RequestBody CategoryDto categoryDto) {
+        return categoryService.createCategory(categoryDto);
+    }
+
+    @PutMapping("/{id}")
+    public CategoryDto createCategoryById(@PathVariable Long id, @RequestBody CategoryDto categoryDto) {
+        return categoryService.updateCategory(id, categoryDto);
+    }
+
+    @DeleteMapping("/{id}")
+    public void deleteCategoryById(@PathVariable Long id) {
+        categoryService.deleteCategory(id);
     }
 }

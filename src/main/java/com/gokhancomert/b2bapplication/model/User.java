@@ -19,6 +19,7 @@ public class User {
 
     @Column(unique = true, nullable = false) //unique:1 username sadece 1 kişide olabilir. nullable:Bu alan boş bırakılamaz.Kullanıcı login olurken genellikle bu alan kullanılır.
     private String username;
+    private String email;
 
     private String password; //kullanıcı şifresi tutulur, her zaman hash'li. Düz yazı(plain text) kullanılamaz.
 
