@@ -14,10 +14,10 @@ public class UserMapper {
     }
 
     public static UserResponse toResponse(User user) {
-        UserResponse response = new UserResponse();
-        response.setId(user.getId());
-        response.setUsername(user.getUsername());
-        response.setRole(user.getRoles().toString()); //
-        return response;
+        return UserResponse.builder()
+                .id(user.getId())
+                .username(user.getUsername())
+                .roles(user.getRoles())
+                .build();
     }
 }

@@ -2,12 +2,14 @@ package com.gokhancomert.b2bapplication.security;
 
 import com.gokhancomert.b2bapplication.model.User;
 import com.gokhancomert.b2bapplication.repository.UserRepository;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
-import java.util.Collections;
+import java.util.stream.Collectors;
+
 //UserDetailsService: Spring Security’nin authentication (kimlik doğrulama) sırasında kullanıcı bilgilerini yüklemek için kullandığı standart interface. CustomUserDetailsService, bizim UserRepository tabanlı kullanıcı kaynağımızı Spring Security’ye bağlar.
 @Service
 public class CustomUserDetailsService implements UserDetailsService {
@@ -31,7 +33,9 @@ public class CustomUserDetailsService implements UserDetailsService {
         return new org.springframework.security.core.userdetails.User(
                 user.getUsername(), //kullanıcı adı
                 user.getPassword(), //şifre hash’i (BCrypt vs.)
-                Collections.singleton(() -> "ROLE_" + user.getRoles()) //kullanıcının rol(ler)i, Spring Security rollerin "ROLE_" prefix’i ile başlamasını ister. USER → ROLE_USER, ADMIN → ROLE_ADMIN
+                user.getRoles().stream()
+                        .map(role -> new SimpleGrantedAuthority("ROLE_" + role))
+                        .collect(Collectors.toSet())
         );
     }
 }

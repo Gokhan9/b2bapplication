@@ -10,6 +10,7 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @Configuration
 public class SecurityConfig {
@@ -33,12 +34,15 @@ public class SecurityConfig {
         http
                 .csrf(csrf -> csrf.disable()) //CSRF (Cross-Site Request Forgery) saldırılarına karşı korumadır.
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/auth/**", "/api/products/**", "/api/categories/**").permitAll() //api'lere herkes erişebilir.
+                        .requestMatchers("/api/auth/**").permitAll()
+                        .requestMatchers("/api/products/**", "/api/categories/**").permitAll() //api'lere herkes erişebilir.
                         .requestMatchers("/api/admin/**").hasRole("ADMIN") //yetki verilen admin erişim sağlar.
                         .anyRequest().authenticated() //geri kalan tüm endpoint’ler giriş yapmış (token’ı olan) kullanıcı ister.
                 )
                 .sessionManagement(session -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS)); //STATELESS ile Spring’e session oluşturma demiş oluyoruz.
+
+        http.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build(); //Yapılandırmayı tamamlar ve filtre zincirini Spring’e verir. Her request bu kurallara göre değerlendirilir.
     }
