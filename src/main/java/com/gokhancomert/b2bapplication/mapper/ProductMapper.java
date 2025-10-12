@@ -20,7 +20,7 @@ public class ProductMapper {
         return toDto;
     }
 
-    public Product toEntity(ProductDto dto, Category category) {
+    public Product toProduct(ProductDto dto, Category category) {
         Product product = new Product();
         product.setName(dto.getName());
         product.setDescription(dto.getDescription());

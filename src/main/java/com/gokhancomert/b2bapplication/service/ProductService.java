@@ -40,7 +40,8 @@ public class ProductService {
     public ProductDto createProduct(ProductDto productDto) {
         Category category = categoryRepository.findById(productDto.getCategoryId())
                 .orElseThrow(() -> new RuntimeException("Category not found with id: " + productDto.getCategoryId()));
-        Product product = productMapper.toEntity(productDto, category);
+
+        Product product = productMapper.toProduct(productDto, category);
         return productMapper.toDto(productRepository.save(product));
     }
 

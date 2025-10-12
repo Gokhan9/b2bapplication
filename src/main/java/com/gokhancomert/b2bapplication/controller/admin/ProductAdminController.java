@@ -31,6 +31,6 @@ public class ProductAdminController {
     // Ürünü Sil
     @DeleteMapping("/{id}")
     public void deleteProduct(@PathVariable Long id) {
-        productService.deleteProduct(id);
+        productService.deleteProductById(id);
     }
 }

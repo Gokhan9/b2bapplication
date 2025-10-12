@@ -1,5 +1,6 @@
 package com.gokhancomert.b2bapplication.controller;
 
+import com.gokhancomert.b2bapplication.dto.UserDto;
 import com.gokhancomert.b2bapplication.mapper.UserMapper;
 import com.gokhancomert.b2bapplication.request.UserLoginRequest;
 import com.gokhancomert.b2bapplication.request.UserRegisterRequest;
@@ -25,19 +26,25 @@ public class AuthController {
     private final JwtUtil jwtUtil;
     private final PasswordEncoder passwordEncoder;
     private final UserService userService;
+    private final UserMapper userMapper;
 
 
-    public AuthController(UserRepository userRepository, JwtUtil jwtUtil, PasswordEncoder passwordEncoder, UserService userService) {
+    public AuthController(UserRepository userRepository,
+                          JwtUtil jwtUtil,
+                          PasswordEncoder passwordEncoder,
+                          UserService userService,
+                          UserMapper userMapper) {
         this.userRepository = userRepository;
         this.jwtUtil = jwtUtil;
         this.passwordEncoder = passwordEncoder;
         this.userService = userService;
+        this.userMapper = userMapper;
     }
 
     @PostMapping("/register")
-    public UserResponse register(@RequestBody UserRegisterRequest userRegisterRequest) {
-        User user = UserMapper.toEntity(userRegisterRequest);
-        User savedUser = userService.registerUser(user);
+    public UserResponse register(@RequestBody UserDto userDto) {
+        User user = userMapper.toUser(userDto);
+        User savedUser = userService.createUser(user);
         return UserMapper.toResponse(savedUser);
     }
 
