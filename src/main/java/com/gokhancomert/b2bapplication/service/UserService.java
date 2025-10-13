@@ -5,12 +5,9 @@ import com.gokhancomert.b2bapplication.exception.ResourceNotFoundException;
 import com.gokhancomert.b2bapplication.mapper.UserMapper;
 import com.gokhancomert.b2bapplication.model.User;
 import com.gokhancomert.b2bapplication.repository.UserRepository;
-import com.gokhancomert.b2bapplication.request.UserCreateRequest;
-import com.gokhancomert.b2bapplication.request.UserUpdateRequest;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -22,7 +19,9 @@ public class UserService {
     private final PasswordEncoder passwordEncoder;
     private final UserMapper userMapper;
 
-    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder, UserMapper userMapper) {
+    public UserService(UserRepository userRepository,
+                       PasswordEncoder passwordEncoder,
+                       UserMapper userMapper) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.userMapper = userMapper;

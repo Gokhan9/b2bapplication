@@ -1,7 +1,6 @@
 package com.gokhancomert.b2bapplication.controller;
 
 import com.gokhancomert.b2bapplication.dto.CategoryDto;
-import com.gokhancomert.b2bapplication.model.Category;
 import com.gokhancomert.b2bapplication.service.CategoryService;
 import org.springframework.web.bind.annotation.*;
 
@@ -33,12 +32,13 @@ public class CategoryController {
     }
 
     @PutMapping("/{id}")
-    public CategoryDto createCategoryById(@PathVariable Long id, @RequestBody CategoryDto categoryDto) {
+    public CategoryDto updateCategoryById(@PathVariable Long id,
+                                          @RequestBody CategoryDto categoryDto) {
         return categoryService.updateCategory(id, categoryDto);
     }
 
     @DeleteMapping("/{id}")
     public void deleteCategoryById(@PathVariable Long id) {
-        categoryService.deleteCategory(id);
+        categoryService.deleteCategoryById(id);
     }
 }

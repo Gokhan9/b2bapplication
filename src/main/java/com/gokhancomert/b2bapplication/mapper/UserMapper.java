@@ -5,8 +5,6 @@ import com.gokhancomert.b2bapplication.model.User;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
-import java.util.stream.Collectors;
-
 @Component
 public class UserMapper {
 
@@ -17,6 +15,7 @@ public class UserMapper {
     }
 
     public UserDto toDto(User user) {
+
         UserDto userDto = new UserDto();
 
         userDto.setId(user.getId());
@@ -27,7 +26,9 @@ public class UserMapper {
     }
 
     public User toUser(UserDto userDto) {
+
         User user = new User();
+
         user.setUsername(userDto.getUsername());
         user.setPassword(passwordEncoder.encode(userDto.getPassword()));
         user.setEmail(userDto.getEmail());

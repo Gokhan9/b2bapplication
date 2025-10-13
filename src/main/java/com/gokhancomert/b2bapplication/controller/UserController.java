@@ -32,7 +32,7 @@ public class UserController {
         return userService.createUser(userDto);
     }
 
-    @PostMapping("/register")
+    @PostMapping("/register") //Kullanıcının kayıt olabilmesi için bir REST endpoint oluşturmak.
     public ResponseEntity<UserDto> registerUser(@RequestBody UserDto userDto) {
         UserDto savedUser = userService.createUser(userDto);
         return ResponseEntity.ok(savedUser);

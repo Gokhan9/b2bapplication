@@ -1,9 +1,7 @@
 package com.gokhancomert.b2bapplication.controller;
 
 import com.gokhancomert.b2bapplication.dto.ProductDto;
-import com.gokhancomert.b2bapplication.model.Product;
 import com.gokhancomert.b2bapplication.service.ProductService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -34,7 +32,8 @@ public class ProductController {
     }
 
     @PutMapping("/{id}")
-    public ProductDto updateProduct(@PathVariable Long id, @RequestBody ProductDto productDto) {
+    public ProductDto updateProduct(@PathVariable Long id,
+                                    @RequestBody ProductDto productDto) {
         return productService.updateProduct(id, productDto);
     }
 

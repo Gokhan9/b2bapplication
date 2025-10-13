@@ -10,7 +10,6 @@ public class ProductDto {
     private String description;
     private Double price;
     private Integer stock;
-    //private String label;
     private String imageUrl;
 
     private Long categoryId;

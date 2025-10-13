@@ -1,5 +1,6 @@
 package com.gokhancomert.b2bapplication.controller.admin;
 
+import com.gokhancomert.b2bapplication.dto.ProductDto;
 import com.gokhancomert.b2bapplication.model.Product;
 import com.gokhancomert.b2bapplication.service.ProductService;
 import org.springframework.web.bind.annotation.*;
@@ -16,16 +17,16 @@ public class ProductAdminController {
 
     // Yeni Ürün Ekle
     @PostMapping
-    public Product createProduct(@RequestBody Product product) {
-        return productService.saveProduct(product);
+    public ProductDto createProduct(@RequestBody ProductDto productDto) {
+        return productService.createProduct(productDto);
     }
 
     // Ürünü Güncelle
     @PutMapping("/{id}")
-    public Product updateProduct(@PathVariable Long id,
-                                 @RequestBody Product product) {
-        product.setId(id);
-        return productService.saveProduct(product);
+    public ProductDto updateProduct(@PathVariable Long id,
+                                 @RequestBody ProductDto productDto) {
+        productDto.setId(id);
+        return productService.updateProduct(id, productDto);
     }
 
     // Ürünü Sil

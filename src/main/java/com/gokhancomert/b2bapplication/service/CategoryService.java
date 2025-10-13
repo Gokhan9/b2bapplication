@@ -15,7 +15,8 @@ public class CategoryService {
     private final CategoryRepository categoryRepository;
     private final CategoryMapper categoryMapper;
 
-    public CategoryService(CategoryRepository categoryRepository, CategoryMapper categoryMapper) {
+    public CategoryService(CategoryRepository categoryRepository,
+                           CategoryMapper categoryMapper) {
         this.categoryRepository = categoryRepository;
         this.categoryMapper = categoryMapper;
     }
@@ -33,22 +34,28 @@ public class CategoryService {
                 .orElseThrow(() -> new RuntimeException("Category not found with id: " + id));
     }
 
-    //oluştur
     public CategoryDto createCategory(CategoryDto categoryDto) {
         Category category = new Category();
         return categoryMapper.toDto(categoryRepository.save(category));
     }
 
-    //güncelle
     public CategoryDto updateCategory(Long id, CategoryDto categoryDto) {
         Category category = categoryRepository.findById(id)
                 .orElseThrow(()  -> new RuntimeException("Category not found with id: " + id));
+
         category.setName(categoryDto.getName());
         return categoryMapper.toDto(categoryRepository.save(category));
     }
 
-    public void deleteCategory(Long id) {
-        categoryRepository.deleteById(id);
+    public CategoryDto deleteCategoryById(Long id) {
+        Category category = categoryRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Category not found with id: " + id));
+
+        CategoryDto deletedCategoryDto = categoryMapper.toDto(category);
+
+        categoryRepository.delete(category);
+
+        return deletedCategoryDto;
     }
 
 }
