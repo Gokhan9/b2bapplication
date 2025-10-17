@@ -1,25 +1,20 @@
 package com.gokhancomert.b2bapplication.mapper;
 
 import com.gokhancomert.b2bapplication.dto.CategoryDto;
+import com.gokhancomert.b2bapplication.dto.request.CategoryCreateRequest;
+import com.gokhancomert.b2bapplication.dto.request.CategoryUpdateRequest;
 import com.gokhancomert.b2bapplication.model.Category;
+import org.mapstruct.Mapper;
 
-public class CategoryMapper {
+@Mapper(componentModel = "spring")
+public interface CategoryMapper {
 
-    public CategoryDto toDto(Category category) {
+    CategoryDto toDto(Category category);
 
-        CategoryDto dto = new CategoryDto();
+    Category toCategory(CategoryCreateRequest request);
 
-        dto.setId(category.getId());
-        dto.setName(category.getName());
-        return dto;
-    }
-
-    public Category toCategory(CategoryDto dto) {
-
-        Category category = new Category();
-
-        category.setId(dto.getId());
-        category.setName(dto.getName());
-        return category;
-    }
+    Category toCategory(CategoryUpdateRequest request);
 }
+
+
+    

@@ -1,6 +1,9 @@
 package com.gokhancomert.b2bapplication.service;
 
 import com.gokhancomert.b2bapplication.dto.UserDto;
+import com.gokhancomert.b2bapplication.dto.request.UserCreateRequest;
+import com.gokhancomert.b2bapplication.dto.request.UserRegisterRequest;
+import com.gokhancomert.b2bapplication.dto.request.UserUpdateRequest;
 import com.gokhancomert.b2bapplication.exception.ResourceNotFoundException;
 import com.gokhancomert.b2bapplication.mapper.UserMapper;
 import com.gokhancomert.b2bapplication.model.User;
@@ -37,36 +40,40 @@ public class UserService {
     public UserDto getById(Long id) {
         return userRepository.findById(id)
                 .map(userMapper::toDto)
-                .orElseThrow(() -> new RuntimeException("User not found with this id: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("User not found with this id: " + id));
     }
 
-    public UserDto createUser(UserDto userDto) {
-        User user = userMapper.toUser(userDto);
-
+    public UserDto createUser(UserCreateRequest createRequest) {
+        User user = userMapper.toUser(createRequest);
         if (user.getRoles() == null || user.getRoles().isEmpty()) {
             user.setRoles(Set.of("USER"));
         }
-
         User savedUser = userRepository.save(user);
         return userMapper.toDto(savedUser);
     }
 
-    public UserDto updateUserById(Long id, UserDto userDto) {
+    public UserDto registerUser(UserRegisterRequest registerRequest) {
+        User user = userMapper.toUser(registerRequest);
+        user.setRoles(Set.of("USER")); // Default role for registered users
+        User savedUser = userRepository.save(user);
+        return userMapper.toDto(savedUser);
+    }
+
+    public User loginUser(String username, String password) {
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found with username: " + username));
+
+        if (!passwordEncoder.matches(password, user.getPassword())) {
+            throw new RuntimeException("Invalid password");
+        }
+        return user;
+    }
+
+    public UserDto updateUserById(Long id, UserUpdateRequest updateRequest) {
         User user = userRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("User not found with this id: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("User not found with this id: " + id));
 
-        if (userDto.getEmail() != null) {
-            user.setEmail(userDto.getEmail());
-        }
-
-        if (userDto.getPassword() != null) {
-            user.setPassword(passwordEncoder.encode(userDto.getPassword()));
-        }
-
-        if (userDto.getRoles() != null && !userDto.getRoles().isEmpty()) {
-            user.setRoles(userDto.getRoles());
-        }
-
+        userMapper.updateUserFromDto(updateRequest, user);
         return userMapper.toDto(userRepository.save(user));
     }
 

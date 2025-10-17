@@ -1,35 +1,23 @@
 package com.gokhancomert.b2bapplication.mapper;
 
 import com.gokhancomert.b2bapplication.dto.ProductDto;
-import com.gokhancomert.b2bapplication.model.Category;
+import com.gokhancomert.b2bapplication.dto.request.ProductCreateRequest;
+import com.gokhancomert.b2bapplication.dto.request.ProductUpdateRequest;
 import com.gokhancomert.b2bapplication.model.Product;
+import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
+import org.mapstruct.MappingTarget;
 
-public class ProductMapper {
+@Mapper(componentModel = "spring")
+public interface ProductMapper {
 
-    public ProductDto toDto(Product product) {
+    ProductDto toDto(Product product);
 
-        ProductDto toDto = new ProductDto();
+    @Mapping(target = "category", ignore = true)
+    Product toProduct(ProductCreateRequest request);
 
-        toDto.setId(product.getId());
-        toDto.setName(product.getName());
-        toDto.setDescription(product.getDescription());
-        toDto.setPrice(product.getPrice());
-        toDto.setStock(product.getStock());
-        toDto.setImageUrl(product.getImageUrl());
-        toDto.setCategoryId(product.getCategory() != null ? product.getCategory().getId() : null);
-        return toDto;
-    }
-
-    public Product toProduct(ProductDto dto, Category category) {
-
-        Product product = new Product();
-
-        product.setName(dto.getName());
-        product.setDescription(dto.getDescription());
-        product.setPrice(dto.getPrice());
-        product.setStock(dto.getStock());
-        product.setImageUrl(dto.getImageUrl());
-        product.setCategory(category);
-        return product;
-    }
+    @Mapping(target = "id", ignore = true)
+    @Mapping(target = "category", ignore = true)
+    void updateProductFromDto(ProductUpdateRequest dto, @MappingTarget Product entity);
 }
+

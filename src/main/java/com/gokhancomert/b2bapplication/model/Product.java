@@ -20,8 +20,8 @@ public class Product {
     private String description;
     private String imageUrl;
     private Double price;
-    private Integer stock;
-    private String tag;
+    private Boolean inStock;
+    private String label;
 
     @ManyToOne //Bir ürün → bir kategoriye ait, Bir kategori → birden fazla ürüne sahip olabilir.
     @JoinColumn(name = "category_id") //products tablosunda foreign key sütunu category_id olarak oluşturulur.

@@ -1,15 +1,13 @@
 package com.gokhancomert.b2bapplication.controller;
 
 import com.gokhancomert.b2bapplication.dto.UserDto;
-import com.gokhancomert.b2bapplication.mapper.UserMapper;
-import com.gokhancomert.b2bapplication.request.UserLoginRequest;
-import com.gokhancomert.b2bapplication.request.UserRegisterRequest;
-import com.gokhancomert.b2bapplication.response.UserResponse;
+import com.gokhancomert.b2bapplication.dto.request.UserLoginRequest;
+import com.gokhancomert.b2bapplication.dto.request.UserRegisterRequest;
 import com.gokhancomert.b2bapplication.model.User;
-import com.gokhancomert.b2bapplication.repository.UserRepository;
 import com.gokhancomert.b2bapplication.security.JwtUtil;
 import com.gokhancomert.b2bapplication.service.UserService;
-import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -22,30 +20,20 @@ import java.util.Map;
 @RequestMapping("/api/auth")
 public class AuthController {
 
-    private final UserRepository userRepository;
     private final JwtUtil jwtUtil;
-    private final PasswordEncoder passwordEncoder;
     private final UserService userService;
-    private final UserMapper userMapper;
 
 
-    public AuthController(UserRepository userRepository,
-                          JwtUtil jwtUtil,
-                          PasswordEncoder passwordEncoder,
-                          UserService userService,
-                          UserMapper userMapper) {
-        this.userRepository = userRepository;
+    public AuthController(JwtUtil jwtUtil,
+                          UserService userService) {
         this.jwtUtil = jwtUtil;
-        this.passwordEncoder = passwordEncoder;
         this.userService = userService;
-        this.userMapper = userMapper;
     }
 
     @PostMapping("/register")
-    public UserResponse register(@RequestBody UserDto userDto) {
-        User user = userMapper.toUser(userDto);
-        User savedUser = userService.createUser(user);
-        return UserMapper.toResponse(savedUser);
+    public ResponseEntity<UserDto> register(@RequestBody UserRegisterRequest registerRequest) {
+        UserDto savedUser = userService.registerUser(registerRequest);
+        return new ResponseEntity<>(savedUser, HttpStatus.CREATED);
     }
 
     @PostMapping("/login") //Bu metod, HTTP POST isteği ile /login endpoint’ine gelen talepleri karşılar.

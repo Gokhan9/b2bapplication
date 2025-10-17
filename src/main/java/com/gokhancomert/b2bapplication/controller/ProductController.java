@@ -25,21 +25,4 @@ public class ProductController {
     public ProductDto findByProductId(@PathVariable Long id) {
         return productService.findByProductId(id);
     }
-
-    @PostMapping
-    public ProductDto createProduct(@RequestBody ProductDto productDto) {
-        return productService.createProduct(productDto);
-    }
-
-    @PutMapping("/{id}")
-    public ProductDto updateProduct(@PathVariable Long id,
-                                    @RequestBody ProductDto productDto) {
-        return productService.updateProduct(id, productDto);
-    }
-
-    @DeleteMapping("/{id}")
-    public void deleteProduct(@PathVariable Long id) {
-        productService.deleteProductById(id);
-    }
-
 }

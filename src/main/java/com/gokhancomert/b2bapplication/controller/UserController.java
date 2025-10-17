@@ -1,6 +1,8 @@
 package com.gokhancomert.b2bapplication.controller;
 
 import com.gokhancomert.b2bapplication.dto.UserDto;
+import com.gokhancomert.b2bapplication.dto.request.UserCreateRequest;
+import com.gokhancomert.b2bapplication.dto.request.UserUpdateRequest;
 import com.gokhancomert.b2bapplication.service.UserService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -28,20 +30,14 @@ public class UserController {
     }
 
     @PostMapping
-    public UserDto createUser(@RequestBody UserDto userDto) {
-        return userService.createUser(userDto);
-    }
-
-    @PostMapping("/register") //Kullanıcının kayıt olabilmesi için bir REST endpoint oluşturmak.
-    public ResponseEntity<UserDto> registerUser(@RequestBody UserDto userDto) {
-        UserDto savedUser = userService.createUser(userDto);
-        return ResponseEntity.ok(savedUser);
+    public UserDto createUser(@RequestBody UserCreateRequest createRequest) {
+        return userService.createUser(createRequest);
     }
 
     @PutMapping("/{id}")
     public UserDto updateUser(@PathVariable Long id,
-                              @RequestBody UserDto userDto) {
-        return userService.updateUserById(id, userDto);
+                              @RequestBody UserUpdateRequest updateRequest) {
+        return userService.updateUserById(id, updateRequest);
     }
 
     @DeleteMapping("/{id}")

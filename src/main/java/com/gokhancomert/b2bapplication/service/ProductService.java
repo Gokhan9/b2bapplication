@@ -1,6 +1,9 @@
 package com.gokhancomert.b2bapplication.service;
 
 import com.gokhancomert.b2bapplication.dto.ProductDto;
+import com.gokhancomert.b2bapplication.dto.request.ProductCreateRequest;
+import com.gokhancomert.b2bapplication.dto.request.ProductUpdateRequest;
+import com.gokhancomert.b2bapplication.exception.ResourceNotFoundException;
 import com.gokhancomert.b2bapplication.mapper.ProductMapper;
 import com.gokhancomert.b2bapplication.model.Category;
 import com.gokhancomert.b2bapplication.model.Product;
@@ -36,29 +39,26 @@ public class ProductService {
     public ProductDto findByProductId(Long id) {
         return productRepository.findById(id)
                 .map(productMapper::toDto)
-                .orElseThrow(() -> new RuntimeException("Product not found with id: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("Product not found with id: " + id));
     }
 
-    public ProductDto createProduct(ProductDto productDto) {
-        Category category = categoryRepository.findById(productDto.getCategoryId())
-                .orElseThrow(() -> new RuntimeException("Category not found with id: " + productDto.getCategoryId()));
+    public ProductDto createProduct(ProductCreateRequest productCreateRequest) {
+        Category category = categoryRepository.findById(productCreateRequest.getCategoryId())
+                .orElseThrow(() -> new ResourceNotFoundException("Category not found with id: " + productCreateRequest.getCategoryId()));
 
-        Product product = productMapper.toProduct(productDto, category);
+        Product product = productMapper.toProduct(productCreateRequest);
+        product.setCategory(category);
         return productMapper.toDto(productRepository.save(product));
     }
 
-    public ProductDto updateProduct(Long id, ProductDto productDto) {
+    public ProductDto updateProduct(Long id, ProductUpdateRequest productUpdateRequest) {
         Product product = productRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Product not found with id: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("Product not found with id: " + id));
 
-        Category category = categoryRepository.findById(productDto.getCategoryId())
-                .orElseThrow(() -> new RuntimeException("Category not found with id: " + productDto.getCategoryId()));
+        Category category = categoryRepository.findById(productUpdateRequest.getCategoryId())
+                .orElseThrow(() -> new ResourceNotFoundException("Category not found with id: " + productUpdateRequest.getCategoryId()));
 
-        product.setName(productDto.getName());
-        product.setDescription(productDto.getDescription());
-        product.setPrice(productDto.getPrice());
-        product.setStock(productDto.getStock());
-        product.setImageUrl(productDto.getImageUrl());
+        productMapper.updateProductFromDto(productUpdateRequest, product);
         product.setCategory(category);
         return productMapper.toDto(productRepository.save(product));
     }

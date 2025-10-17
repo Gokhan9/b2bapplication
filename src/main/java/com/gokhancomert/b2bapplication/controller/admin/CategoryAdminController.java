@@ -1,7 +1,8 @@
 package com.gokhancomert.b2bapplication.controller.admin;
 
 import com.gokhancomert.b2bapplication.dto.CategoryDto;
-import com.gokhancomert.b2bapplication.model.Category;
+import com.gokhancomert.b2bapplication.dto.request.CategoryCreateRequest;
+import com.gokhancomert.b2bapplication.dto.request.CategoryUpdateRequest;
 import com.gokhancomert.b2bapplication.service.CategoryService;
 import org.springframework.web.bind.annotation.*;
 
@@ -17,16 +18,15 @@ public class CategoryAdminController {
 
     // Yeni Kategori Ekleyebilsin
     @PostMapping
-    public CategoryDto createCategory(@RequestBody CategoryDto categoryDto) {
-        return categoryService.createCategory(categoryDto);
+    public CategoryDto createCategory(@RequestBody CategoryCreateRequest categoryCreateRequest) {
+        return categoryService.createCategory(categoryCreateRequest);
     }
 
     // Kategorileri güncelleyebilsin.
     @PutMapping("/{id}")
     public CategoryDto updateCategoryById(@PathVariable Long id,
-                                   @RequestBody CategoryDto categoryDto) {
-        categoryDto.setId(id);
-        return categoryService.updateCategory(id, categoryDto);
+                                   @RequestBody CategoryUpdateRequest categoryUpdateRequest) {
+        return categoryService.updateCategory(id, categoryUpdateRequest);
     }
 
     // Kategoriyi silebilsin.

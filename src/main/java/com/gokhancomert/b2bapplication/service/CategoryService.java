@@ -1,6 +1,9 @@
 package com.gokhancomert.b2bapplication.service;
 
 import com.gokhancomert.b2bapplication.dto.CategoryDto;
+import com.gokhancomert.b2bapplication.dto.request.CategoryCreateRequest;
+import com.gokhancomert.b2bapplication.dto.request.CategoryUpdateRequest;
+import com.gokhancomert.b2bapplication.exception.ResourceNotFoundException;
 import com.gokhancomert.b2bapplication.mapper.CategoryMapper;
 import com.gokhancomert.b2bapplication.model.Category;
 import com.gokhancomert.b2bapplication.repository.CategoryRepository;
@@ -31,31 +34,26 @@ public class CategoryService {
     public CategoryDto getCategoryById(Long id) {
         return categoryRepository.findById(id)
                 .map(categoryMapper::toDto)
-                .orElseThrow(() -> new RuntimeException("Category not found with id: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("Category not found with id: " + id));
     }
 
-    public CategoryDto createCategory(CategoryDto categoryDto) {
-        Category category = new Category();
+    public CategoryDto createCategory(CategoryCreateRequest categoryCreateRequest) {
+        Category category = categoryMapper.toCategory(categoryCreateRequest);
         return categoryMapper.toDto(categoryRepository.save(category));
     }
 
-    public CategoryDto updateCategory(Long id, CategoryDto categoryDto) {
+    public CategoryDto updateCategory(Long id, CategoryUpdateRequest categoryUpdateRequest) {
         Category category = categoryRepository.findById(id)
-                .orElseThrow(()  -> new RuntimeException("Category not found with id: " + id));
+                .orElseThrow(()  -> new ResourceNotFoundException("Category not found with id: " + id));
 
-        category.setName(categoryDto.getName());
+        category.setName(categoryUpdateRequest.getName());
         return categoryMapper.toDto(categoryRepository.save(category));
     }
 
-    public CategoryDto deleteCategoryById(Long id) {
+    public void deleteCategoryById(Long id) {
         Category category = categoryRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Category not found with id: " + id));
-
-        CategoryDto deletedCategoryDto = categoryMapper.toDto(category);
-
+                .orElseThrow(() -> new ResourceNotFoundException("Category not found with id: " + id));
         categoryRepository.delete(category);
-
-        return deletedCategoryDto;
     }
 
 }

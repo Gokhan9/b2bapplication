@@ -1,39 +1,33 @@
 package com.gokhancomert.b2bapplication.mapper;
 
 import com.gokhancomert.b2bapplication.dto.UserDto;
+import com.gokhancomert.b2bapplication.dto.request.UserCreateRequest;
+import com.gokhancomert.b2bapplication.dto.request.UserRegisterRequest;
+import com.gokhancomert.b2bapplication.dto.request.UserUpdateRequest;
 import com.gokhancomert.b2bapplication.model.User;
+import org.mapstruct.*;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.stereotype.Component;
 
-@Component
-public class UserMapper {
+@Mapper(componentModel = "spring")
+public abstract class UserMapper {
 
-    private final PasswordEncoder passwordEncoder;
+    @Autowired
+    protected PasswordEncoder passwordEncoder;
 
-    public UserMapper(PasswordEncoder passwordEncoder) {
-        this.passwordEncoder = passwordEncoder;
-    }
+    public abstract UserDto toDto(User user);
 
-    public UserDto toDto(User user) {
+    @Mapping(target = "password", qualifiedByName = "encodePassword")
+    public abstract User toUser(UserRegisterRequest request);
 
-        UserDto userDto = new UserDto();
+    @Mapping(target = "password", qualifiedByName = "encodePassword")
+    public abstract User toUser(UserCreateRequest request);
 
-        userDto.setId(user.getId());
-        userDto.setUsername(user.getUsername());
-        userDto.setEmail(user.getEmail());
-        userDto.setRoles(user.getRoles());
-        return userDto;
-    }
+    @Mapping(target = "id", ignore = true)
+    public abstract void updateUserFromDto(UserUpdateRequest dto, @MappingTarget User entity);
 
-    public User toUser(UserDto userDto) {
-
-        User user = new User();
-
-        user.setUsername(userDto.getUsername());
-        user.setPassword(passwordEncoder.encode(userDto.getPassword()));
-        user.setEmail(userDto.getEmail());
-        user.setRoles(userDto.getRoles());
-        return user;
-
+    @Named("encodePassword")
+    public String encodePassword(String password) {
+        return passwordEncoder.encode(password);
     }
 }

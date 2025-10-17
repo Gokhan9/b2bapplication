@@ -1,7 +1,8 @@
 package com.gokhancomert.b2bapplication.controller.admin;
 
 import com.gokhancomert.b2bapplication.dto.ProductDto;
-import com.gokhancomert.b2bapplication.model.Product;
+import com.gokhancomert.b2bapplication.dto.request.ProductCreateRequest;
+import com.gokhancomert.b2bapplication.dto.request.ProductUpdateRequest;
 import com.gokhancomert.b2bapplication.service.ProductService;
 import org.springframework.web.bind.annotation.*;
 
@@ -17,16 +18,15 @@ public class ProductAdminController {
 
     // Yeni Ürün Ekle
     @PostMapping
-    public ProductDto createProduct(@RequestBody ProductDto productDto) {
-        return productService.createProduct(productDto);
+    public ProductDto createProduct(@RequestBody ProductCreateRequest productCreateRequest) {
+        return productService.createProduct(productCreateRequest);
     }
 
     // Ürünü Güncelle
     @PutMapping("/{id}")
     public ProductDto updateProduct(@PathVariable Long id,
-                                 @RequestBody ProductDto productDto) {
-        productDto.setId(id);
-        return productService.updateProduct(id, productDto);
+                                 @RequestBody ProductUpdateRequest productUpdateRequest) {
+        return productService.updateProduct(id, productUpdateRequest);
     }
 
     // Ürünü Sil
