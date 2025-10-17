@@ -3,20 +3,24 @@ package com.gokhancomert.b2bapplication.security;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import java.security.Key;
+import javax.crypto.SecretKey;
 import java.util.Date;
 import java.util.Set;
 
 @Component /// Bu sınıfı Spring'in yönetmesi için bean olarak işaretler
 public class JwtUtil {
 
-    /// JWT imzalamak için kullanılacak gizli anahtar (en az 32 karakter uzunluğunda olmalı)
-    private final Key SECRET_KEY = Keys.hmacShaKeyFor("supersecretkeysupersecretkeysupersecretkey123".getBytes());
+    private final SecretKey SECRET_KEY;
 
     /// Token geçerlilik süresi (1 saat)
     private final long EXPIRATION_TIME = 1000 * 60 * 60; // 1 saat
+
+    public JwtUtil(@Value("${jwt.secret}") String secret) {
+        this.SECRET_KEY = Keys.hmacShaKeyFor(secret.getBytes());
+    }
 
 
     /// Kullanıcı adı ve roller bilgisine göre JWT token oluşturur.

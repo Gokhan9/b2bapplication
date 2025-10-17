@@ -6,6 +6,7 @@ import com.gokhancomert.b2bapplication.dto.request.UserRegisterRequest;
 import com.gokhancomert.b2bapplication.model.User;
 import com.gokhancomert.b2bapplication.security.JwtUtil;
 import com.gokhancomert.b2bapplication.service.UserService;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -31,7 +32,7 @@ public class AuthController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<UserDto> register(@RequestBody UserRegisterRequest registerRequest) {
+    public ResponseEntity<UserDto> register(@Valid @RequestBody UserRegisterRequest registerRequest) {
         UserDto savedUser = userService.registerUser(registerRequest);
         return new ResponseEntity<>(savedUser, HttpStatus.CREATED);
     }
