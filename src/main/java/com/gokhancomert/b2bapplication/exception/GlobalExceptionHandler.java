@@ -42,4 +42,14 @@ public class GlobalExceptionHandler {
 
         return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
     }
+
+    @ExceptionHandler(InvalidCredentialsException.class)
+    public ResponseEntity<Map<String, String>> handleInvalidCredentialsException(InvalidCredentialsException exception) {
+        Map<String, String> invalidCredentialsErrorResponse = Map.of(
+                "error", exception.getMessage(),
+                "status", HttpStatus.UNAUTHORIZED.toString()
+        );
+
+        return new ResponseEntity<>(invalidCredentialsErrorResponse, HttpStatus.UNAUTHORIZED);
+    }
 }

@@ -4,6 +4,7 @@ import com.gokhancomert.b2bapplication.dto.UserDto;
 import com.gokhancomert.b2bapplication.dto.request.UserCreateRequest;
 import com.gokhancomert.b2bapplication.dto.request.UserRegisterRequest;
 import com.gokhancomert.b2bapplication.dto.request.UserUpdateRequest;
+import com.gokhancomert.b2bapplication.exception.InvalidCredentialsException;
 import com.gokhancomert.b2bapplication.exception.ResourceNotFoundException;
 import com.gokhancomert.b2bapplication.mapper.UserMapper;
 import com.gokhancomert.b2bapplication.model.User;
@@ -64,7 +65,7 @@ public class UserService {
                 .orElseThrow(() -> new ResourceNotFoundException("User not found with username: " + username));
 
         if (!passwordEncoder.matches(password, user.getPassword())) {
-            throw new RuntimeException("Invalid password");
+            throw new InvalidCredentialsException("Invalid username or password.");
         }
         return user;
     }

@@ -4,6 +4,7 @@ import com.gokhancomert.b2bapplication.dto.ProductDto;
 import com.gokhancomert.b2bapplication.dto.request.ProductCreateRequest;
 import com.gokhancomert.b2bapplication.dto.request.ProductUpdateRequest;
 import com.gokhancomert.b2bapplication.service.ProductService;
+import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -18,7 +19,7 @@ public class ProductAdminController {
 
     // Yeni Ürün Ekle
     @PostMapping
-    public ProductDto createProduct(@RequestBody ProductCreateRequest productCreateRequest) {
+    public ProductDto createProduct(@Valid @RequestBody ProductCreateRequest productCreateRequest) {
         return productService.createProduct(productCreateRequest);
     }
 
