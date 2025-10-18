@@ -36,12 +36,6 @@ public class ProductService {
                 .collect(Collectors.toList());
     }
 
-    public ProductDto findByProductId(Long id) {
-        return productRepository.findById(id)
-                .map(productMapper::toDto)
-                .orElseThrow(() -> new ResourceNotFoundException("Product not found with id: " + id));
-    }
-
     public ProductDto createProduct(ProductCreateRequest productCreateRequest) {
         Category category = categoryRepository.findById(productCreateRequest.getCategoryId())
                 .orElseThrow(() -> new ResourceNotFoundException("Category not found with id: " + productCreateRequest.getCategoryId()));
@@ -68,5 +62,18 @@ public class ProductService {
             throw new ResourceNotFoundException("Product not found with id: " + id);
         }
         productRepository.deleteById(id);
+    }
+
+    public List<ProductDto> findAllByCategoryId(Long categoryId) {
+        return productRepository.findByCategoryId(categoryId)
+                .stream()
+                .map(productMapper::toDto)
+                .collect(Collectors.toList());
+    }
+
+    public ProductDto findByProductId(Long id) {
+        return productRepository.findById(id)
+                .map(productMapper::toDto)
+                .orElseThrow(() -> new ResourceNotFoundException("Product not found with id: " + id));
     }
 }

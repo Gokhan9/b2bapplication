@@ -16,6 +16,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -38,9 +40,78 @@ public class ProductServiceTest {
     private ProductService productService;
 
     @Test
+    void getAll_whenProductsExist_shouldReturnListOfProducts() {
+
+        // given
+        Product product1 = new Product();
+        product1.setId(1L);
+        Product product2 = new Product();
+        product2.setId(2L);
+
+        List<Product> productList = Arrays.asList(product1, product2);
+
+        ProductDto dto1 = new ProductDto();
+        dto1.setId(1L);
+        ProductDto dto2 = new ProductDto();
+        dto2.setId(2L);
+
+        // when
+        when(productRepository.findAll()).thenReturn(productList);
+        when(productMapper.toDto(product1)).thenReturn(dto1);
+        when(productMapper.toDto(product2)).thenReturn(dto2);
+
+        // then
+        List<ProductDto> result = productService.findAll();
+
+        // verify
+        assertNotNull(result);
+        assertEquals(2, result.size());
+        assertEquals(dto1.getId(), result.get(0).getId());
+        assertEquals(dto2.getId(), result.get(1).getId());
+    }
+
+    @Test
+    void getById_whenProductDoesNotExist_shouldThrowResourceNotFoundException() {
+
+        // given: Sadece var olmayan bir ürün ID'si (nonExistentId) tanımlıyoruz.
+        final Long nonExistentId = 999L;
+
+        // when: productRepository'nin findById metodu bu ID ile çağrıldığında, "kayıt bulunamadı" anlamına gelen Optional.empty() döndürmesini sağlıyoruz.
+        when(productRepository.findById(nonExistentId)).thenReturn(Optional.empty());
+
+        // then & verify: assertThrows kullanarak productService.findByProductId metodunun ResourceNotFoundException fırlattığını tek adımda hem çalıştırıyor hem de doğruluyoruz.
+        assertThrows(ResourceNotFoundException.class, () -> {
+            productService.findByProductId(nonExistentId);
+        });
+    }
+
+    @Test
+    void getById_whenProductExists_shouldReturnProduct() {
+
+        // given
+        final Long productId = 1L;
+        Product foundProduct = new Product();
+        foundProduct.setId(productId);
+
+        ProductDto expectedDto = new ProductDto();
+        expectedDto.setId(productId);
+
+        // when
+        when(productRepository.findById(productId)).thenReturn(Optional.of(foundProduct));
+        when(productMapper.toDto(foundProduct)).thenReturn(expectedDto);
+
+        // then
+        ProductDto result = productService.findByProductId(productId);
+
+        // verify
+        assertNotNull(result);
+        assertEquals(expectedDto.getId(), result.getId());
+    }
+
+    @Test
     void createProduct_whenProductIsSavedSuccessfully_shouldReturnSavedProduct() {
 
-        // Given
+        // given
         ProductCreateRequest createRequest = new ProductCreateRequest();
         createRequest.setCategoryId(1L);
 
@@ -54,70 +125,34 @@ public class ProductServiceTest {
         ProductDto expectedDto = new ProductDto();
         expectedDto.setId(1L);
 
-        // When
+        // when
         when(categoryRepository.findById(1L)).thenReturn(Optional.of(category));
         when(productMapper.toProduct(createRequest)).thenReturn(product);
         when(productRepository.save(product)).thenReturn(savedProduct);
         when(productMapper.toDto(savedProduct)).thenReturn(expectedDto);
 
-        // Then
+        // then
         ProductDto result = productService.createProduct(createRequest);
 
-        // Verify
+        // verify
         assertNotNull(result);
         assertEquals(expectedDto.getId(), result.getId());
     }
 
-    @Test
-    void getById_whenProductDoesNotExist_shouldThrowResourceNotFoundException() {
 
-        // Given: Sadece var olmayan bir ürün ID'si (nonExistentId) tanımlıyoruz.
-        final Long nonExistentId = 999L;
 
-        // When: productRepository'nin findById metodu bu ID ile çağrıldığında, "kayıt bulunamadı" anlamına gelen Optional.empty() döndürmesini sağlıyoruz.
-        when(productRepository.findById(nonExistentId)).thenReturn(Optional.empty());
-
-        // Then & Verify: assertThrows kullanarak productService.findByProductId metodunun ResourceNotFoundException fırlattığını tek adımda hem çalıştırıyor hem de doğruluyoruz.
-        assertThrows(ResourceNotFoundException.class, () -> {
-            productService.findByProductId(nonExistentId);
-        });
-    }
-
-    @Test
-    void getById_whenProductExists_shouldReturnProduct() {
-
-        // Given
-        final Long productId = 1L;
-        Product foundProduct = new Product();
-        foundProduct.setId(productId);
-
-        ProductDto expectedDto = new ProductDto();
-        expectedDto.setId(productId);
-
-        // When
-        when(productRepository.findById(productId)).thenReturn(Optional.of(foundProduct));
-        when(productMapper.toDto(foundProduct)).thenReturn(expectedDto);
-
-        // Then
-        ProductDto result = productService.findByProductId(productId);
-
-        // Verify
-        assertNotNull(result);
-        assertEquals(expectedDto.getId(), result.getId());
-    }
 
     @Test
     void update_whenProductExists_shouldReturnUpdatedProduct() {
 
-        // Given - Hazırlık Aşaması
+        // given - Hazırlık Aşaması
         final Long existingId = 1L; //Güncellemek istediğimiz, veritabanında "var olduğunu" varsaydığımız ürünün ID'sini tanımlıyoruz.
         //Servisimize göndereceğimiz "güncelleme isteğini" temsil eden nesneyi oluşturuyoruz. İçine ürünün yeni adı olarak "Updated Name" değerini koyuyoruz.
         ProductUpdateRequest updateRequest = new ProductUpdateRequest();
         updateRequest.setCategoryId(1L);
         updateRequest.setName("Updated Name");
 
-        //Bu, ürünün veritabanındaki güncellenmeden önceki halini temsil ediyor. Adının "Old Name" olduğuna dikkat edin. findById metodu çağrıldığında repository'nin bu nesneyi döndürmesini
-        //     sağlayacağız.
+        //Bu, ürünün veritabanındaki güncellenmeden önceki halini temsil ediyor. Adının "Old Name" olduğuna dikkat edin. findById metodu çağrıldığında repository'nin bu nesneyi döndürmesini sağlayacağız.
         Product existingProduct = new Product();
         existingProduct.setId(existingId);
         existingProduct.setName("Old Name");
@@ -131,16 +166,16 @@ public class ProductServiceTest {
         expectedDto.setId(existingId);
         expectedDto.setName("Updated Name");
 
-        // When - Davranış Belirleme Aşaması
+        // when - Davranış Belirleme Aşaması
         when(productRepository.findById(existingId)).thenReturn(Optional.of(existingProduct));      //Eğer productRepository'nin findById metodu 1L ID'si ile çağrılırsa, ona existingProduct nesnemizi (yani ürünün eski halini) içeren bir Optional döndür" diyoruz. Bu, ürünün veritabanında bulunduğu senaryoyu canlandırır.
         when(categoryRepository.findById(updateRequest.getCategoryId())).thenReturn(Optional.of(category)); //Benzer şekilde, kategori deposu 1L ID'si ile sorgulandığında, hazırladığımız sahte category nesnesini döndürmesini söylüyoruz.
         when(productRepository.save(existingProduct)).thenReturn(existingProduct); //Servis, ürünü güncelledikten sonra save metodunu çağırdığında, repository'nin bu kaydı başarıyla yaptığını ve güncellenmiş nesneyi geri döndürdüğünü varsayıyoruz.
         when(productMapper.toDto(existingProduct)).thenReturn(expectedDto); //Son adımda, servis productMapper'dan kaydettiği ürünü DTO'ya çevirmesini istediğinde, mapper'ın bizim hazırladığımız expectedDto'yu (yani "Updated Name" içeren nesneyi) döndürmesini sağlıyoruz.
 
-        // Then - Çalıştırma Aşaması
+        // then - Çalıştırma Aşaması
         ProductDto result = productService.updateProduct(existingId,updateRequest);
 
-        // Verify - Doğrulama Aşaması
+        // verify - Doğrulama Aşaması
         assertNotNull(result); //Metodun null bir sonuç döndürmediğinden emin oluyoruz.
         assertEquals(expectedDto.getName(), result.getName()); //Dönen sonucun (result) adının, bizim beklediğimiz expectedDto'nun adıyla ("Updated Name") aynı olup olmadığını kontrol ediyoruz. Bu, güncellemenin başarılı olduğunun en önemli kanıtıdır.
 
@@ -151,33 +186,67 @@ public class ProductServiceTest {
     @Test
     void delete_whenProductExists_shouldDeleteSuccessfully() {
 
-        // Given
+        // given
         final Long existingId = 1L;
 
-        // When
+        // when
         when(productRepository.existsById(existingId)).thenReturn(true);
 
-        // Then
+        // then
         productService.deleteProductById(existingId);
 
-        // Verify
+        // verify
         verify(productRepository).deleteById(existingId);
     }
 
     @Test
     void delete_whenProductDoesNotExist_shouldThrowResourceNotFoundException() {
 
-        //Given
+        // given
         final Long nonExistendId = 999L;
 
-        //When
-        //Ürünün var olmadığını simüle edeceğiz.
+        // when
+        //Ürünün var olmadığını simüle ediyoruz.
         when(productRepository.existsById(nonExistendId)).thenReturn(false);
 
-        //Then
+        // then
         //Servisin, ürün olmadığında ResourceNotFoundException fırlattığını doğrulayalım..
         assertThrows(ResourceNotFoundException.class, () -> {
             productService.deleteProductById(nonExistendId);
         });
+    }
+
+    @Test
+    void findAllByCategoryId_whenProductsExists_shouldReturnProducts() {
+
+        //given
+        final Long categoryId = 1L;
+
+        Product product1 = new Product();
+        product1.setId(10L);
+
+        Product product2 = new Product();
+        product2.setId(20L);
+
+        List<Product> productList = Arrays.asList(product1, product2);
+
+        ProductDto dto1 = new ProductDto();
+        dto1.setId(10L);
+
+        ProductDto dto2 = new ProductDto();
+        dto2.setId(20L);
+
+        // when
+        when(productRepository.findByCategoryId(categoryId)).thenReturn(productList);
+        when(productMapper.toDto(product1)).thenReturn(dto1);
+        when(productMapper.toDto(product2)).thenReturn(dto2);
+
+        // then
+        List<ProductDto> result = productService.findAllByCategoryId(categoryId);
+
+        // verify
+        assertNotNull(result);
+        assertEquals(2, result.size());
+        assertEquals(dto1.getId(), result.get(0).getId());
     }
 }
