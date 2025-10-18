@@ -64,6 +64,9 @@ public class ProductService {
     }
 
     public void deleteProductById(Long id) {
+        if (!productRepository.existsById(id)) {
+            throw new ResourceNotFoundException("Product not found with id: " + id);
+        }
         productRepository.deleteById(id);
     }
 }
