@@ -63,7 +63,6 @@ public class CategoryServiceTest {
         //then
         List<CategoryDto> result = categoryService.findAll();
 
-
         assertNotNull(result);
         assertEquals(2, result.size());
         assertEquals("Electronics", result.get(0).getName());
@@ -132,11 +131,11 @@ public class CategoryServiceTest {
 
         Category existingCategory = new Category(1L, "Electronics", null);
         Category updatedCategory = new Category(1L, updateRequest.getName(), null);
-        CategoryDto updatedCategorDto = new CategoryDto(1L, updateRequest.getName(), null);
+        CategoryDto updatedCategoryDto = new CategoryDto(1L, updateRequest.getName(), null);
 
         when(categoryRepository.findById(1L)).thenReturn(Optional.of(existingCategory));
         when(categoryRepository.save(any(Category.class))).thenReturn(updatedCategory);
-        when(categoryMapper.toDto(updatedCategory)).thenReturn(updatedCategorDto);
+        when(categoryMapper.toDto(updatedCategory)).thenReturn(updatedCategoryDto);
 
         CategoryDto result = categoryService.updateCategory(1L, updateRequest);
 
@@ -164,7 +163,26 @@ public class CategoryServiceTest {
 
     //Kategori Silme (Başarılı): deleteCategory metodunun, mevcut bir kategoriyi başarıyla sildiğini ve herhangi bir hata döndürmediğini test et.
     @Test
-    void deleteCategory_shouldDeleteCategory_whenCategoryExists() {
+    void deleteCategoryById_shouldDeleteCategory_whenCategoryExists() {
 
+        when(categoryRepository.findById(1L)).thenReturn(Optional.of(category));
+        doNothing().when(categoryRepository).delete(category);
+
+        categoryService.deleteCategoryById(1L);
+
+        verify(categoryRepository, times(1)).findById(1L);
+        verify(categoryRepository, times(1)).delete(category);
+    }
+
+    //Kategori Silme (Başarısız): deleteCategory metodunun, mevcut olmayan bir kategoriyi silmeye çalışırken ResourceNotFoundException fırlattığını test et.
+    @Test
+    void deleteCategoryById_shouldThrowResourceNotFoundException_whenCategoryDoesNotExist() {
+
+        when(categoryRepository.findById(anyLong())).thenReturn(Optional.empty());
+
+        assertThrows(ResourceNotFoundException.class, () -> categoryService.deleteCategoryById(99L));
+
+        verify(categoryRepository, times(1)).findById(99L);
+        verify(categoryRepository, never()).delete(any(Category.class));
     }
 }
