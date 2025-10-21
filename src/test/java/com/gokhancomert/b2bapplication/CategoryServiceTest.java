@@ -125,4 +125,27 @@ public class CategoryServiceTest {
         verify(categoryRepository, times(1)).save(newCategory);
         verify(categoryMapper, times(1)).toDto(savedCategory);
     }
+
+    //Yeni Kategori Oluşturma: createCategory metodunun, yeni bir kategori oluşturma isteğini doğru bir şekilde işleyip oluşturulan CategoryDto'yu döndürdüğünü test et.
+    @Test
+    void updateCategory_shouldReturnUpdatedCategoryDto_whenCategoryExists() {
+
+        Category existingCategory = new Category(1L, "Electronics", null);
+        Category updatedCategory = new Category(1L, updateRequest.getName(), null);
+        CategoryDto updatedCategorDto = new CategoryDto(1L, updateRequest.getName(), null);
+
+        when(categoryRepository.findById(1L)).thenReturn(Optional.of(existingCategory));
+        when(categoryRepository.save(any(Category.class))).thenReturn(updatedCategory);
+        when(categoryMapper.toDto(updatedCategory)).thenReturn(updatedCategorDto);
+
+        CategoryDto result = categoryService.updateCategory(1L, updateRequest);
+
+        assertNotNull(result);
+        assertEquals(1L, result.getId());
+        assertEquals("Updated Electronics", result.getName());
+
+        verify(categoryRepository, times(1)).findById(1L);
+        verify(categoryRepository, times(1)).save(any(Category.class));
+        verify(categoryMapper, times(1)).toDto(updatedCategory);
+    }
 }
