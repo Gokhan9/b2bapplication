@@ -15,11 +15,13 @@ public class UserRegisterRequest {
     @NotBlank(message = "Kullanıcı Adı Boş Olamaz.")
     private String username;
 
+    @NotBlank(message = "E-Posta Boş Olamaz")
+    @Email(message = "Geçerli Bir E-Posta Formatı Girilmelidir.")
+    private String email;
+
     @NotBlank(message = "Şifre Boş Olamaz.")
     @Size(min = 8, message = "Şifre En Az 8 Karakter Uzunluğunda Olmalıdır.")
     private String password;
 
-    @NotBlank(message = "E-Posta Boş Olamaz")
-    @Email(message = "Geçerli Bir E-Posta Formatı Girilmelidir.")
-    private String email;
+
 }
