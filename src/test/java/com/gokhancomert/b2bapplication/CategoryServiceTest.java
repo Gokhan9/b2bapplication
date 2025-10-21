@@ -161,4 +161,10 @@ public class CategoryServiceTest {
         verify(categoryRepository, never()).save(any(Category.class));
         verify(categoryMapper, never()).toDto(any(Category.class));
     }
+
+    //Kategori Silme (Başarılı): deleteCategory metodunun, mevcut bir kategoriyi başarıyla sildiğini ve herhangi bir hata döndürmediğini test et.
+    @Test
+    void deleteCategory_shouldDeleteCategory_whenCategoryExists() {
+
+    }
 }
