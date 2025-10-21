@@ -126,7 +126,7 @@ public class CategoryServiceTest {
         verify(categoryMapper, times(1)).toDto(savedCategory);
     }
 
-    //Yeni Kategori Oluşturma: createCategory metodunun, yeni bir kategori oluşturma isteğini doğru bir şekilde işleyip oluşturulan CategoryDto'yu döndürdüğünü test et.
+    //Kategori Güncelleme (Başarılı): updateCategory metodunun, mevcut bir kategoriyi verilen bilgilerle güncelleyip güncellenmiş CategoryDto'yu döndürdüğünü test et.
     @Test
     void updateCategory_shouldReturnUpdatedCategoryDto_whenCategoryExists() {
 
@@ -147,5 +147,18 @@ public class CategoryServiceTest {
         verify(categoryRepository, times(1)).findById(1L);
         verify(categoryRepository, times(1)).save(any(Category.class));
         verify(categoryMapper, times(1)).toDto(updatedCategory);
+    }
+
+    //Kategori Güncelleme (Başarısız): updateCategory metodunun, mevcut olmayan bir kategoriyi güncellemeye çalışırken ResourceNotFoundException fırlattığını test et.
+    @Test
+    void updateCategory_shouldThrowResourceNotFoundException_whenCategoryDoesNotExist() {
+
+        when(categoryRepository.findById(anyLong())).thenReturn(Optional.empty());
+
+        assertThrows(ResourceNotFoundException.class, () -> categoryService.updateCategory(99L, updateRequest));
+
+        verify(categoryRepository, times(1)).findById(99L);
+        verify(categoryRepository, never()).save(any(Category.class));
+        verify(categoryMapper, never()).toDto(any(Category.class));
     }
 }
