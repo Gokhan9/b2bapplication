@@ -148,4 +148,19 @@ public class UserServiceTest {
         verify(userRepository, times(1)).save(newUser);
         verify(userMapper, times(1)).toDto(savedUser);
     }
+
+    //Kullanıcı Girişi (Başarılı): loginUser() metodunun, geçerli kimlik bilgileri verildiğinde User nesnesini döndürdüğünü test et.
+    @Test
+    void loginUser_shouldReturnUser_whenCredentialsAreValid() {
+        when(userRepository.findByUsername("testuser")).thenReturn(Optional.of(user));
+        when(passwordEncoder.matches("password", "encodedpassword")).thenReturn(true);
+
+        User result = userService.loginUser("testuser", "password");
+
+        assertNotNull(result);
+        assertEquals(user, result);
+
+        verify(userRepository, times(1)).findByUsername("testuser");
+        verify(passwordEncoder, times(1)).matches("password", "encodedpassword");
+    }
 }
