@@ -209,4 +209,16 @@ public class UserServiceTest {
         verify(userRepository, times(1)).save(user);
         verify(userMapper, times(1)).toDto(updatedUser);
     }
+
+    //Kullanıcı Güncelleme (Başarısız): updateUserById() metodunun, mevcut olmayan bir kullanıcıyı güncellemeye çalışırken ResourceNotFoundException fırlattığını test et.
+    @Test
+    void updateUserById_shouldThrowResourceNotFoundException_whenUserDoesNotExist() {
+        when(userRepository.findById(1L)).thenReturn(Optional.empty());
+
+        assertThrows(ResourceNotFoundException.class, () -> userService.updateUserById(1L, userUpdateRequest));
+
+        verify(userRepository, times(1)).findById(1L);
+        verify(userMapper, never()).updateUserFromDto(any(), any());
+        verify(userRepository, never()).save(any());
+    }
 }
