@@ -38,16 +38,6 @@ public class ProductService {
         this.productMapper = productMapper;
     }
 
-    /*
-    public List<ProductDto> findAll() {
-        logger.info("Attempting to find all products");
-        List<Product> products = productRepository.findAll();
-        logger.info("Found {} products", products.size());
-        return products.stream()
-                .map(productMapper::toDto)
-                .collect(Collectors.toList());
-    }*/
-
     public Page<ProductDto> searchProducts(String name, Long categoryId, Pageable pageable) {
         logger.info("Searching for products with name containing '{}' and categoryId '{}'", name, categoryId);
 
@@ -117,16 +107,6 @@ public class ProductService {
         productRepository.deleteById(id);
         logger.info("Successfully deleted product with id: {}", id);
     }
-
-    /*
-    public List<ProductDto> findAllByCategoryId(Long categoryId) {
-        logger.info("Attempting to find all products by category with id: '{}'", categoryId);
-        List<Product> products = productRepository.findByCategoryId(categoryId);
-        logger.info("Found {} products for category id: '{}'", products.size(), categoryId);
-        return products.stream()
-                .map(productMapper::toDto)
-                .collect(Collectors.toList());
-    }*/
 
     public ProductDto findByProductId(Long id) {
         logger.info("Attempting to find product with id: '{}'", id);

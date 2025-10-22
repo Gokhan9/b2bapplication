@@ -19,24 +19,12 @@ public class ProductController {
         this.productService = productService;
     }
 
-    /*
-    @GetMapping
-    public List<ProductDto> findAll() {
-        return productService.findAll();
-    }*/
-
     @GetMapping
     public ResponseEntity<Page<ProductDto>> searchProducts(@RequestParam(required = false) String name,
                                                            @RequestParam(required = false) Long categoryId,
                                                            Pageable pageable) {
         return ResponseEntity.ok(productService.searchProducts(name, categoryId, pageable));
     }
-
-    /*
-    @GetMapping("/{id}")
-    public ProductDto findByProductId(@PathVariable Long id) {
-        return productService.findByProductId(id);
-    }*/
 
     @GetMapping("/{id}")
     public ResponseEntity<ProductDto> findByProductId(@PathVariable Long id) {
