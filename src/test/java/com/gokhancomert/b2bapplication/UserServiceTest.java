@@ -163,4 +163,15 @@ public class UserServiceTest {
         verify(userRepository, times(1)).findByUsername("testuser");
         verify(passwordEncoder, times(1)).matches("password", "encodedpassword");
     }
+
+    //Kullanıcı Girişi (Kullanıcı Bulunamadı): loginUser() metodunun, mevcut olmayan bir kullanıcı adı verildiğinde ResourceNotFoundException fırlattığını test et.
+    @Test
+    void loginUser_shouldThrowResourceNotFoundException_whenUserDoesNotFound() {
+        when(userRepository.findByUsername("unknownuser")).thenReturn(Optional.empty());
+
+        assertThrows(ResourceNotFoundException.class, () -> userService.loginUser("unknownuser", "password"));
+
+        verify(userRepository, times(1)).findByUsername("unknownuser");
+        verify(passwordEncoder, never()).matches(anyString(), anyString());
+    }
 }
