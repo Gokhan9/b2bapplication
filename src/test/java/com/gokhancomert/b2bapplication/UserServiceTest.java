@@ -18,6 +18,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -75,5 +76,21 @@ public class UserServiceTest {
 
         verify(userRepository, times(1)).findAll();
         verify(userMapper, times(2)).toDto(any(User.class));
+    }
+
+    //ID ile Kullanıcı Getirme (Başarılı): getById() metodunun, mevcut bir ID verildiğinde ilgili UserDto nesnesini döndürdüğünü test et.
+    @Test
+    void getById_shouldReturnUserDto_whenUserExists() {
+
+        when(userRepository.findById(1L)).thenReturn(Optional.of(user));
+        when(userMapper.toDto(user)).thenReturn(userDto);
+
+        UserDto result = userService.getById(1L);
+
+        assertNotNull(result);
+        assertEquals(userDto, result);
+
+        verify(userRepository, times(1)).findById(1L);
+        verify(userMapper, times(1)).toDto(user);
     }
 }
