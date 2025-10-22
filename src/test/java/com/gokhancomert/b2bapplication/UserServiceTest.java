@@ -187,4 +187,26 @@ public class UserServiceTest {
         verify(userRepository, times(1)).findByUsername("passwordIsIncorrect");
         verify(passwordEncoder, times(1)).matches("password", "encodedpassword");
     }
+
+    //Kullanıcı Güncelleme (Başarılı): updateUserById() metodunun, mevcut bir kullanıcıyı verilen bilgilerle güncelleyip güncellenmiş UserDto'yu döndürdüğünü test et.
+    @Test
+    void updateUserById_shouldUpdateAndReturnUserDto_whenUserExists() {
+        User updatedUser = new User(1L, "updatedUser", "updatedUser@example.com", "encodedpassword", Set.of("ADMIN"));
+        UserDto updatedUserDto = new UserDto("updatedUser", "updatedUser@example.com", "encodedpassword", Set.of("ADMIN"));
+
+        when(userRepository.findById(1L)).thenReturn(Optional.of(user));
+        doNothing().when(userMapper).updateUserFromDto(userUpdateRequest, user);
+        when(userRepository.save(user)).thenReturn(updatedUser);
+        when(userMapper.toDto(updatedUser)).thenReturn(updatedUserDto);
+
+        UserDto result = userService.updateUserById(1L, userUpdateRequest);
+
+        assertNotNull(result);
+        assertEquals(updatedUserDto, result);
+
+        verify(userRepository, times(1)).findById(1L);
+        verify(userMapper, times(1)).updateUserFromDto(userUpdateRequest, user);
+        verify(userRepository, times(1)).save(user);
+        verify(userMapper, times(1)).toDto(updatedUser);
+    }
 }
