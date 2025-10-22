@@ -9,10 +9,15 @@ import com.gokhancomert.b2bapplication.model.Category;
 import com.gokhancomert.b2bapplication.model.Product;
 import com.gokhancomert.b2bapplication.repository.CategoryRepository;
 import com.gokhancomert.b2bapplication.repository.ProductRepository;
+import jakarta.persistence.criteria.Predicate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -33,6 +38,7 @@ public class ProductService {
         this.productMapper = productMapper;
     }
 
+    /*
     public List<ProductDto> findAll() {
         logger.info("Attempting to find all products");
         List<Product> products = productRepository.findAll();
@@ -40,6 +46,28 @@ public class ProductService {
         return products.stream()
                 .map(productMapper::toDto)
                 .collect(Collectors.toList());
+    }*/
+
+    public Page<ProductDto> searchProducts(String name, Long categoryId, Pageable pageable) {
+        logger.info("Searching for products with name containing '{} and categoryId '{}'", name, categoryId);
+
+        Specification<Product> specification = (root, query, criteriaBuilder) -> {
+            List<Predicate> predicates = new ArrayList<>();
+
+            if (name != null && !name.trim().isEmpty()) {
+                predicates.add(criteriaBuilder.like(criteriaBuilder.lower(root.get("name")), "%" + name.trim().toLowerCase() + "%"));
+            }
+
+            if (categoryId != null) {
+                predicates.add(criteriaBuilder.equal(root.get("category").get("id"), categoryId));
+            }
+
+            return criteriaBuilder.and(predicates.toArray(new Predicate[0]));
+        };
+
+        Page<Product> products = productRepository.findAll(specification, pageable);
+        logger.info("Found {} products matching criteria.", products.getTotalElements());
+        return products.map(productMapper::toDto);
     }
 
     public ProductDto createProduct(ProductCreateRequest productCreateRequest) {
@@ -90,6 +118,7 @@ public class ProductService {
         logger.info("Successfully deleted product with id: {}", id);
     }
 
+    /*
     public List<ProductDto> findAllByCategoryId(Long categoryId) {
         logger.info("Attempting to find all products by category with id: '{}'", categoryId);
         List<Product> products = productRepository.findByCategoryId(categoryId);
@@ -97,7 +126,7 @@ public class ProductService {
         return products.stream()
                 .map(productMapper::toDto)
                 .collect(Collectors.toList());
-    }
+    }*/
 
     public ProductDto findByProductId(Long id) {
         logger.info("Attempting to find product with id: '{}'", id);
