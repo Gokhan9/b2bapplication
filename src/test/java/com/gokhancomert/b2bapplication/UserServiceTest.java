@@ -221,4 +221,16 @@ public class UserServiceTest {
         verify(userMapper, never()).updateUserFromDto(any(), any());
         verify(userRepository, never()).save(any());
     }
+
+    //Kullanıcı Silme (Başarılı): deleteUserById() metodunun, mevcut bir kullanıcıyı başarıyla sildiğini ve herhangi bir hata döndürmediğini test et.
+    @Test
+    void deleteUserById_shouldDeleteUser_whenUserExists() {
+        when(userRepository.existsById(1L)).thenReturn(true);
+        doNothing().when(userRepository).deleteById(1L);
+
+        assertDoesNotThrow(() -> userService.deleteUserById(1L));
+
+        verify(userRepository, times(1)).existsById(1L);
+        verify(userRepository, times(1)).deleteById(1L);
+    }
 }
