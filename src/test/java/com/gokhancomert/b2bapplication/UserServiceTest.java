@@ -106,4 +106,25 @@ public class UserServiceTest {
         verify(userRepository, times(1)).findById(1L);
         verify(userMapper, never()).toDto(any(User.class));
     }
+
+    //Yeni Kullanıcı Oluşturma: createUser() metodunun, yeni bir kullanıcı oluşturma isteğini doğru bir şekilde işleyip oluşturulan UserDto'yu döndürdüğünü test et.
+    @Test
+    void createUser_shouldCreateAndReturnUserDto() {
+        User newUser = new User(null, "newUser", "newUser@example.com", "encodedpassword", Set.of("USER"));
+        User savedUser = new User(2L, "newUser", "newUser@example.com", "encodedpassword", Set.of("USER"));
+        UserDto savedUserDto = new UserDto("newUser", "newUser@example.com", "encodedpassword", Set.of("USER"));
+
+        when(userMapper.toUser(userCreateRequest)).thenReturn(newUser);
+        when(userRepository.save(newUser)).thenReturn(savedUser);
+        when(userMapper.toDto(savedUser)).thenReturn(savedUserDto);
+
+        UserDto result = userService.createUser(userCreateRequest);
+
+        assertNotNull(result);
+        assertEquals(savedUserDto, result);
+
+        verify(userMapper, times(1)).toUser(userCreateRequest);
+        verify(userRepository, times(1)).save(newUser);
+        verify(userMapper, times(1)).toDto(savedUser);
+    }
 }
