@@ -4,6 +4,7 @@ import com.gokhancomert.b2bapplication.dto.UserDto;
 import com.gokhancomert.b2bapplication.dto.request.UserCreateRequest;
 import com.gokhancomert.b2bapplication.dto.request.UserRegisterRequest;
 import com.gokhancomert.b2bapplication.dto.request.UserUpdateRequest;
+import com.gokhancomert.b2bapplication.exception.ResourceNotFoundException;
 import com.gokhancomert.b2bapplication.mapper.UserMapper;
 import com.gokhancomert.b2bapplication.model.User;
 import com.gokhancomert.b2bapplication.repository.UserRepository;
@@ -92,5 +93,17 @@ public class UserServiceTest {
 
         verify(userRepository, times(1)).findById(1L);
         verify(userMapper, times(1)).toDto(user);
+    }
+
+    //ID ile Kullanıcı Getirme (Başarısız): getById() metodunun, mevcut olmayan bir ID verildiğinde ResourceNotFoundException fırlattığını test et.
+    @Test
+    void getById_shouldThrowResourceNotFoundException_whenUserDoesNotExist() {
+
+        when(userRepository.findById(1L)).thenReturn(Optional.empty());
+
+        assertThrows(ResourceNotFoundException.class, () -> userService.getById(1L));
+
+        verify(userRepository, times(1)).findById(1L);
+        verify(userMapper, never()).toDto(any(User.class));
     }
 }
