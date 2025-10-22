@@ -233,4 +233,15 @@ public class UserServiceTest {
         verify(userRepository, times(1)).existsById(1L);
         verify(userRepository, times(1)).deleteById(1L);
     }
+
+    //Kullanıcı Silme (Başarısız): deleteUserById() metodunun, mevcut olmayan bir kullanıcıyı silmeye çalışırken ResourceNotFoundException fırlattığını test et.
+    @Test
+    void deleteUserById_shouldThrowResourceNotFoundException_whenUserDoesNotExist() {
+        when(userRepository.existsById(1L)).thenReturn(false);
+
+        assertThrows(ResourceNotFoundException.class, () -> userService.deleteUserById(1L));
+
+        verify(userRepository, times(1)).existsById(1L);
+        verify(userRepository, never()).deleteById(anyLong());
+    }
 }
