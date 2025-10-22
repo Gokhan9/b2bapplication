@@ -127,4 +127,25 @@ public class UserServiceTest {
         verify(userRepository, times(1)).save(newUser);
         verify(userMapper, times(1)).toDto(savedUser);
     }
+
+    //Kullanıcı Kaydı: registerUser() metodunun, yeni bir kullanıcı kaydı isteğini doğru bir şekilde işleyip oluşturulan UserDto'yu döndürdüğünü test et.
+    @Test
+    void registerUser_shouldRegisterAndReturnUserDto() {
+        User newUser = new User(null, "newuser", "newuser@example.com", "encodedpassword", Set.of("USER"));
+        User savedUser = new User(2L, "newuser", "newuser@example.com", "encodedpassword", Set.of("USER"));
+        UserDto savedUserDto = new UserDto("newuser", "newuser@example.com", "encodedpassword", Set.of("USER"));
+
+        when(userMapper.toUser(userRegisterRequest)).thenReturn(newUser);
+        when(userRepository.save(newUser)).thenReturn(savedUser);
+        when(userMapper.toDto(savedUser)).thenReturn(savedUserDto);
+
+        UserDto result = userService.registerUser(userRegisterRequest);
+
+        assertNotNull(result);
+        assertEquals(savedUserDto, result);
+
+        verify(userMapper, times(1)).toUser(userRegisterRequest);
+        verify(userRepository, times(1)).save(newUser);
+        verify(userMapper, times(1)).toDto(savedUser);
+    }
 }
