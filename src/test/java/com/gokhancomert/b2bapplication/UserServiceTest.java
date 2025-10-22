@@ -4,6 +4,7 @@ import com.gokhancomert.b2bapplication.dto.UserDto;
 import com.gokhancomert.b2bapplication.dto.request.UserCreateRequest;
 import com.gokhancomert.b2bapplication.dto.request.UserRegisterRequest;
 import com.gokhancomert.b2bapplication.dto.request.UserUpdateRequest;
+import com.gokhancomert.b2bapplication.exception.InvalidCredentialsException;
 import com.gokhancomert.b2bapplication.exception.ResourceNotFoundException;
 import com.gokhancomert.b2bapplication.mapper.UserMapper;
 import com.gokhancomert.b2bapplication.model.User;
@@ -173,5 +174,17 @@ public class UserServiceTest {
 
         verify(userRepository, times(1)).findByUsername("unknownuser");
         verify(passwordEncoder, never()).matches(anyString(), anyString());
+    }
+
+    //Kullanıcı Girişi (Yanlış Şifre): loginUser() metodunun, yanlış şifre verildiğinde InvalidCredentialsException fırlattığını test et.
+    @Test
+    void loginUser_shouldThrowInvalidCredentialsException_whenPasswordIsIncorrect() {
+        when(userRepository.findByUsername("passwordIsIncorrect")).thenReturn(Optional.of(user));
+        when(passwordEncoder.matches("password", "encodedpassword")).thenReturn(false);
+
+        assertThrows(InvalidCredentialsException.class, () -> userService.loginUser("passwordIsIncorrect",  "password"));
+
+        verify(userRepository, times(1)).findByUsername("passwordIsIncorrect");
+        verify(passwordEncoder, times(1)).matches("password", "encodedpassword");
     }
 }
