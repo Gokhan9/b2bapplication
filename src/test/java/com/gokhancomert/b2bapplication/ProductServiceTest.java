@@ -15,12 +15,19 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -40,34 +47,52 @@ public class ProductServiceTest {
     private ProductService productService;
 
     @Test
-    void getAll_whenProductsExist_shouldReturnListOfProducts() {
+    void searchProducts_whenNoFilter_shouldReturnPaginatedProducts() {
 
-        // given
+        Pageable pageable = PageRequest.of(0, 10);
         Product product1 = new Product();
         product1.setId(1L);
         Product product2 = new Product();
         product2.setId(2L);
-
         List<Product> productList = Arrays.asList(product1, product2);
+        Page<Product> productPage = new PageImpl<>(productList, pageable, productList.size());
 
         ProductDto dto1 = new ProductDto();
         dto1.setId(1L);
-        ProductDto dto2 = new ProductDto();
-        dto2.setId(2L);
 
-        // when
-        when(productRepository.findAll()).thenReturn(productList);
-        when(productMapper.toDto(product1)).thenReturn(dto1);
-        when(productMapper.toDto(product2)).thenReturn(dto2);
+        when(productRepository.findAll(any(Specification.class), any(Pageable.class))).thenReturn(productPage);
+        when(productMapper.toDto(any(Product.class))).thenReturn(dto1);
 
-        // then
-        List<ProductDto> result = productService.findAll();
+        Page<ProductDto> result = productService.searchProducts(null, null, pageable);
 
-        // verify
         assertNotNull(result);
-        assertEquals(2, result.size());
-        assertEquals(dto1.getId(), result.get(0).getId());
-        assertEquals(dto2.getId(), result.get(1).getId());
+        assertEquals(2, result.getTotalElements());
+        assertEquals(1, result.getTotalPages());
+        assertEquals(dto1.getId(), result.getContent().get(0).getId());
+    }
+
+    @Test
+    void searchProducts_whenFiltered_shouldReturnMatchingPaginatedProducts() {
+
+        Pageable pageable = PageRequest.of(0, 10);
+        Product product1 = new Product();
+        product1.setId(1L);
+        product1.setName("Test Milk");
+        List<Product> productList = Collections.singletonList(product1);
+        Page<Product> productPage = new PageImpl<>(productList, pageable, productList.size());
+
+        ProductDto dto1 = new ProductDto();
+        dto1.setId(1L);
+        dto1.setName("Test Milk");
+
+        when(productRepository.findAll(any(Specification.class), any(Pageable.class))).thenReturn(productPage);
+        when(productMapper.toDto(product1)).thenReturn(dto1);
+
+        Page<ProductDto> result = productService.searchProducts("Milk", 1L, pageable);
+
+        assertNotNull(result);
+        assertEquals(1, result.getTotalElements());
+        assertEquals(dto1.getName(), result.getContent().get(0).getName());
     }
 
     @Test
@@ -214,39 +239,5 @@ public class ProductServiceTest {
         assertThrows(ResourceNotFoundException.class, () -> {
             productService.deleteProductById(nonExistendId);
         });
-    }
-
-    @Test
-    void findAllByCategoryId_whenProductsExists_shouldReturnProducts() {
-
-        //given
-        final Long categoryId = 1L;
-
-        Product product1 = new Product();
-        product1.setId(10L);
-
-        Product product2 = new Product();
-        product2.setId(20L);
-
-        List<Product> productList = Arrays.asList(product1, product2);
-
-        ProductDto dto1 = new ProductDto();
-        dto1.setId(10L);
-
-        ProductDto dto2 = new ProductDto();
-        dto2.setId(20L);
-
-        // when
-        when(productRepository.findByCategoryId(categoryId)).thenReturn(productList);
-        when(productMapper.toDto(product1)).thenReturn(dto1);
-        when(productMapper.toDto(product2)).thenReturn(dto2);
-
-        // then
-        List<ProductDto> result = productService.findAllByCategoryId(categoryId);
-
-        // verify
-        assertNotNull(result);
-        assertEquals(2, result.size());
-        assertEquals(dto1.getId(), result.get(0).getId());
     }
 }

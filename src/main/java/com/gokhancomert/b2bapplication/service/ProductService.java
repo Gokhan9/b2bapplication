@@ -49,7 +49,7 @@ public class ProductService {
     }*/
 
     public Page<ProductDto> searchProducts(String name, Long categoryId, Pageable pageable) {
-        logger.info("Searching for products with name containing '{} and categoryId '{}'", name, categoryId);
+        logger.info("Searching for products with name containing '{}' and categoryId '{}'", name, categoryId);
 
         Specification<Product> specification = (root, query, criteriaBuilder) -> {
             List<Predicate> predicates = new ArrayList<>();
