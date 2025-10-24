@@ -20,10 +20,17 @@ public class Product {
     private String description;
     private String imageUrl;
     private Double price;
-    private Boolean inStock;
+
+    //stok miktarı: 0 ise tükenmiş kabul edilir.
+    private Integer stockQuantity;
+
+    //fiyat birimini tutar. örn: "kg","adet","litre".
+    private String unit;
+
+    //ürün etiketi. örn: "yeni", "indirimde".
     private String label;
 
-    @ManyToOne //Bir ürün → bir kategoriye ait, Bir kategori → birden fazla ürüne sahip olabilir.
+    @ManyToOne //Bir ürün → bir kategoriye ait, Bir kategori → birden fazla ürüne sahip.
     @JoinColumn(name = "category_id") //products tablosunda foreign key sütunu category_id olarak oluşturulur.
     private Category category;
 }
