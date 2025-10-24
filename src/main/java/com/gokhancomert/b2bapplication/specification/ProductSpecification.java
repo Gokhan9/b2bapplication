@@ -55,4 +55,26 @@ public class ProductSpecification {
             }
         };
     }
+
+    /**
+     * Belirtilen fiyat aralığındaki ürünleri filtreleyen bir Specification döner.
+     * Hem minPrice hem maxPrice verilmişse → aralıktaki ürünler.
+     * Sadece biri verilmişse → o sınıra göre filtreleme.
+     * Hiçbiri verilmemişse → filtre uygulanmaz (tüm ürünler).
+     * criteriaBuilder.between(root.get("price"), minPrice, maxPrice); → Yani fiyatı belirlenen aralıkta olan ürünler döner.
+     */
+    public static Specification<Product> hasPriceBeetwen(Double minPrice, Double maxPrice) {
+        return (root, query, criteriaBuilder) -> {
+            if (minPrice != null && maxPrice != null) {
+                return criteriaBuilder.between(root.get("price"), minPrice, maxPrice);
+            }
+            if (minPrice != null) {
+                return criteriaBuilder.greaterThanOrEqualTo(root.get("price"), minPrice);
+            }
+            if (minPrice != null) {
+                return criteriaBuilder.lessThanOrEqualTo(root.get("price"), maxPrice);
+            }
+            return criteriaBuilder.conjunction();
+        };
+    }
 }
