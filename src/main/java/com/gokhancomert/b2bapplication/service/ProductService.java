@@ -16,6 +16,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -43,15 +44,15 @@ public class ProductService {
      * Specification sonrası güncel product metodu
      */
     public Page<ProductDto> searchProducts(String name, Long categoryId, Boolean inStock, Double minPrice, Double maxPrice, Pageable pageable) {
-        logger.info("Searching for products with criteria: NAME='{}', categoryId='{}', inStock='{}', minPrice='{}', maxPrice='{}'",
+        logger.info("Searching for product with criteria: name='{}, categoryId='{}', inStock='{}', minPrice='{}', maxPrice='{}'",
                 name, categoryId, inStock, minPrice, maxPrice);
-
-        Specification<Product> spec = Specification.allOf(ProductSpecification.hasName(name))
+        //Specificationları birleştirdik, dinamik sorgu oluşturduk.
+        Specification<Product> specification = Specification.allOf(ProductSpecification.hasName(name))
                 .and(ProductSpecification.inCategory(categoryId))
                 .and(ProductSpecification.isAvailable(inStock))
                 .and(ProductSpecification.hasPriceBeetwen(minPrice, maxPrice));
 
-        Page<Product> products = productRepository.findAll(spec, pageable);
+        Page<Product> products = productRepository.findAll(specification, pageable);
         logger.info("Found {} products matching criteria.", products.getTotalElements());
         return products.map(productMapper::toDto);
     }
