@@ -95,6 +95,20 @@ public class ProductService {
         return productMapper.toDto(updateProduct);
     }
 
+    public ProductDto updateProductImageUrl(Long productId, String imageUrl) {
+        logger.info("Attempting to update image URL for product with id: '{}'", productId);
+        Product product = productRepository.findById(productId)
+                .orElseThrow(() -> {
+                    logger.warn("Update image URL failed. Product not found with id: '{}'", productId);
+                    return new ResourceNotFoundException("Product not found with id: " + productId);
+                });
+
+        product.setImageUrl(imageUrl);
+        Product updatedProduct = productRepository.save(product);
+        logger.info("Successfully updated image URL for product with id: '{}'", productId);
+        return productMapper.toDto(updatedProduct);
+    }
+
     public void deleteProductById(Long id) {
         logger.info("Attempting to delete product with id: {}", id);
         if (!productRepository.existsById(id)) {

@@ -30,7 +30,7 @@ public class FileUploadService {
      * @return Kaydedilen dosyanın URL'i
      * @throws "IOException" Dosya kaydetme sırasında bir hata oluşursa..
      */
-    private String uploadFile(MultipartFile file) throws IOException {
+    public String uploadFile(MultipartFile file) throws IOException {
         //Dosya adını temizle ve benzersiz hale getir
         String originalFileName = Objects.requireNonNull(file.getOriginalFilename());
         String fileName = UUID.randomUUID().toString() + "_" + originalFileName.replaceAll("\\s+", "_");
