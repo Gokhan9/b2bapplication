@@ -108,6 +108,12 @@ public class ProductService {
         logger.info("Successfully deleted product with id: {}", id);
     }
 
+    /**
+     * Belirli  bir ürünün görsel URL'ini günceller
+     * @param productId
+     * @param imageUrl
+     * @return güncellenen ürün DTO'su
+     */
     public ProductDto updateProductImageUrl(Long productId, String imageUrl) {
         logger.info("Attempting to update image URL for product with id: '{}'", productId);
         Product product = productRepository.findById(productId)
@@ -122,6 +128,11 @@ public class ProductService {
         return productMapper.toDto(updatedProduct);
     }
 
+    /**
+     * Belirli bir ürrünün detaylarını döndürür ve görüntülenme sayısını arttırır.
+     * @param id
+     * @return
+     */
     public ProductDto findByProductId(Long id) {
         logger.info("Attempting to find product with id: {}", id);
         Product product = productRepository.findById(id)
@@ -138,7 +149,7 @@ public class ProductService {
 
     /**
      * Belirli bir ürünün görüntülenme sayısını 1 arttırır.
-     * @param "productId" görüntülenme sayısının arttırılacağı ürün ID'si
+     * @param productId görüntülenme sayısının arttırılacağı ürün ID'si
      */
     public void incrementProductViewCount(Long productId) {
         productRepository.findById(productId).ifPresent(product -> {
@@ -150,7 +161,7 @@ public class ProductService {
 
     /**
      * En çok görüntülenen ürünleri sayfalama ile birlikte döndüreceğiz
-     * @param "pageable" sayfalama bilgileri
+     * @param pageable sayfalama bilgileri
      */
     public Page<ProductDto> getMostViewedProducts(Pageable pageable) {
         logger.info("Fetchin most viewed products.");

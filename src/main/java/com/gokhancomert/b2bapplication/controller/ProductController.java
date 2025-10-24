@@ -53,4 +53,8 @@ public class ProductController {
      * @param "pageable" sayfalama bilgileri
      * @return en çok görüntülenen ürünlerin DTO'larının sayfası
      */
+    @GetMapping("/most-viewed")
+    public ResponseEntity<Page<ProductDto>> getMostViewedProducts(Pageable pageable) {
+        return ResponseEntity.ok(productService.getMostViewedProducts(pageable));
+    }
 }
