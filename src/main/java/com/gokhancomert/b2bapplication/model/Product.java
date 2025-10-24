@@ -30,6 +30,9 @@ public class Product {
     //ürün etiketi. örn: "yeni", "indirimde".
     private String label;
 
+    //ürün görüntülenme sayısı. varsayılan = 0
+    private Long viewCount = 0L;
+
     @ManyToOne //Bir ürün → bir kategoriye ait, Bir kategori → birden fazla ürüne sahip.
     @JoinColumn(name = "category_id") //products tablosunda foreign key sütunu category_id olarak oluşturulur.
     private Category category;

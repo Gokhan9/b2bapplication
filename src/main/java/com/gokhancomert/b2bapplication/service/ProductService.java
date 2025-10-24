@@ -14,7 +14,9 @@ import jakarta.persistence.criteria.Predicate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Service;
@@ -67,6 +69,7 @@ public class ProductService {
 
         Product product = productMapper.toProduct(productCreateRequest);
         product.setCategory(category);
+        product.setViewCount(0L); //Yeni bir ürün oluşturulduğunda görüntüleme sayısını 0 olarak ayarlar.
 
         Product savedProduct = productRepository.save(product);
         logger.info("Successfully created product with id: '{}' and name: '{}'", savedProduct.getId(), savedProduct.getName());
@@ -95,6 +98,16 @@ public class ProductService {
         return productMapper.toDto(updateProduct);
     }
 
+    public void deleteProductById(Long id) {
+        logger.info("Attempting to delete product with id: {}", id);
+        if (!productRepository.existsById(id)) {
+            logger.warn("Delete failed. Product not found with id: '{}'" ,id);
+            throw new ResourceNotFoundException("Product not found with id: " + id);
+        }
+        productRepository.deleteById(id);
+        logger.info("Successfully deleted product with id: {}", id);
+    }
+
     public ProductDto updateProductImageUrl(Long productId, String imageUrl) {
         logger.info("Attempting to update image URL for product with id: '{}'", productId);
         Product product = productRepository.findById(productId)
@@ -109,26 +122,43 @@ public class ProductService {
         return productMapper.toDto(updatedProduct);
     }
 
-    public void deleteProductById(Long id) {
-        logger.info("Attempting to delete product with id: {}", id);
-        if (!productRepository.existsById(id)) {
-            logger.warn("Delete failed. Product not found with id: '{}'" ,id);
-            throw new ResourceNotFoundException("Product not found with id: " + id);
-        }
-        productRepository.deleteById(id);
-        logger.info("Successfully deleted product with id: {}", id);
+    public ProductDto findByProductId(Long id) {
+        logger.info("Attempting to find product with id: {}", id);
+        Product product = productRepository.findById(id)
+                .orElseThrow(() -> {
+                    logger.warn("Product not found with id: '{}'" ,id);
+                    return  new ResourceNotFoundException("Product not found with id: " + id);
+                });
+
+        incrementProductViewCount(id);
+
+        logger.info("Successfully found product with id: {}", id);
+        return productMapper.toDto(product);
     }
 
-    public ProductDto findByProductId(Long id) {
-        logger.info("Attempting to find product with id: '{}'", id);
-        return productRepository.findById(id)
-                .map(product -> {
-                    logger.info("Successfully found product with id: '{}'", id);
-                    return productMapper.toDto(product);
-                })
-                .orElseThrow(() -> {
-                    logger.warn("Product not found with id: '{}'", id);
-                    return new ResourceNotFoundException("Product not found with id: " + id);
-                });
+    /**
+     * Belirli bir ürünün görüntülenme sayısını 1 arttırır.
+     * @param "productId" görüntülenme sayısının arttırılacağı ürün ID'si
+     */
+    public void incrementProductViewCount(Long productId) {
+        productRepository.findById(productId).ifPresent(product -> {
+            product.setViewCount(product.getViewCount() + 1);
+            productRepository.save(product);
+            logger.debug("Product with id: '{} view count incremented to {}'", productId, product.getViewCount());
+        });
+    }
+
+    /**
+     * En çok görüntülenen ürünleri sayfalama ile birlikte döndüreceğiz
+     * @param "pageable" sayfalama bilgileri
+     */
+    public Page<ProductDto> getMostViewedProducts(Pageable pageable) {
+        logger.info("Fetchin most viewed products.");
+
+        //viewcount'a göre azalan sırada sırala
+        Pageable sortedPageable = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), Sort.by("viewCount").descending());
+        Page<Product> products = productRepository.findAll(sortedPageable);
+        logger.info("Found {} most viewed products.");
+        return products.map(productMapper::toDto);
     }
 }
