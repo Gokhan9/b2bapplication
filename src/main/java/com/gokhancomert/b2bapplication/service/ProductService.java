@@ -9,6 +9,7 @@ import com.gokhancomert.b2bapplication.model.Category;
 import com.gokhancomert.b2bapplication.model.Product;
 import com.gokhancomert.b2bapplication.repository.CategoryRepository;
 import com.gokhancomert.b2bapplication.repository.ProductRepository;
+import com.gokhancomert.b2bapplication.specification.ProductSpecification;
 import jakarta.persistence.criteria.Predicate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -38,24 +39,19 @@ public class ProductService {
         this.productMapper = productMapper;
     }
 
-    public Page<ProductDto> searchProducts(String name, Long categoryId, Pageable pageable) {
-        logger.info("Searching for products with name containing '{}' and categoryId '{}'", name, categoryId);
+    /**
+     * Specification sonrası güncel product metodu
+     */
+    public Page<ProductDto> searchProducts(String name, Long categoryId, Boolean inStock, Double minPrice, Double maxPrice, Pageable pageable) {
+        logger.info("Searching for products with criteria: NAME='{}', categoryId='{}', inStock='{}', minPrice='{}', maxPrice='{}'",
+                name, categoryId, inStock, minPrice, maxPrice);
 
-        Specification<Product> specification = (root, query, criteriaBuilder) -> {
-            List<Predicate> predicates = new ArrayList<>();
+        Specification<Product> spec = Specification.allOf(ProductSpecification.hasName(name))
+                .and(ProductSpecification.inCategory(categoryId))
+                .and(ProductSpecification.isAvailable(inStock))
+                .and(ProductSpecification.hasPriceBeetwen(minPrice, maxPrice));
 
-            if (name != null && !name.trim().isEmpty()) {
-                predicates.add(criteriaBuilder.like(criteriaBuilder.lower(root.get("name")), "%" + name.trim().toLowerCase() + "%"));
-            }
-
-            if (categoryId != null) {
-                predicates.add(criteriaBuilder.equal(root.get("category").get("id"), categoryId));
-            }
-
-            return criteriaBuilder.and(predicates.toArray(new Predicate[0]));
-        };
-
-        Page<Product> products = productRepository.findAll(specification, pageable);
+        Page<Product> products = productRepository.findAll(spec, pageable);
         logger.info("Found {} products matching criteria.", products.getTotalElements());
         return products.map(productMapper::toDto);
     }
