@@ -63,7 +63,7 @@ public class ProductServiceTest {
         when(productRepository.findAll(any(Specification.class), any(Pageable.class))).thenReturn(productPage);
         when(productMapper.toDto(any(Product.class))).thenReturn(dto1);
 
-        Page<ProductDto> result = productService.searchProducts(null, null, pageable);
+        Page<ProductDto> result = productService.searchProducts(null, null, null, null, null, pageable);
 
         assertNotNull(result);
         assertEquals(2, result.getTotalElements());
@@ -88,7 +88,7 @@ public class ProductServiceTest {
         when(productRepository.findAll(any(Specification.class), any(Pageable.class))).thenReturn(productPage);
         when(productMapper.toDto(product1)).thenReturn(dto1);
 
-        Page<ProductDto> result = productService.searchProducts("Milk", 1L, pageable);
+        Page<ProductDto> result = productService.searchProducts("Milk", 1L, null, null, null, pageable);
 
         assertNotNull(result);
         assertEquals(1, result.getTotalElements());
