@@ -5,6 +5,7 @@ import com.gokhancomert.b2bapplication.service.ProductService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.parameters.P;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -20,10 +21,14 @@ public class ProductController {
     }
 
     @GetMapping
-    public ResponseEntity<Page<ProductDto>> searchProducts(@RequestParam(required = false) String name,
-                                                           @RequestParam(required = false) Long categoryId,
-                                                           Pageable pageable) {
-        return ResponseEntity.ok(productService.searchProducts(name, categoryId, pageable));
+    public ResponseEntity<Page<ProductDto>> searchProducts(
+            @RequestParam(required = false) String name,
+            @RequestParam(required = false) Long categoryId,
+            @RequestParam(required = false) Boolean inStock,
+            @RequestParam(required = false) Double minPrice,
+            @RequestParam(required = false) Double maxPrice,
+            Pageable pageable) {
+        return ResponseEntity.ok(productService.searchProducts(name, categoryId, inStock, minPrice, maxPrice, pageable));
     }
 
     @GetMapping("/{id}")
