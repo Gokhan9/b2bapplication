@@ -34,20 +34,20 @@ public class FileUploadService {
         //Dosya adını temizle ve benzersiz hale getir
         String originalFileName = Objects.requireNonNull(file.getOriginalFilename());
         String fileName = UUID.randomUUID().toString() + "_" + originalFileName.replaceAll("\\s+", "_");
-        logger.info("Uploading file {}", originalFileName, fileName);
+        logger.info("Uploading file: {} as {}" , originalFileName, fileName);
 
-        //Yükleme dizinini oluşturuyoruz(yoksa)
+        //Yükleme dizinini oluştur(yoksa)
         Path copyLocation = Paths.get(uploadDir + "/" + fileName);
         Files.createDirectories(copyLocation.getParent());
 
-        //Dosyayı hedef konuma kopyala
+        //Dosyayı hedef konuma kopyalamak
         Files.copy(file.getInputStream(), copyLocation, StandardCopyOption.REPLACE_EXISTING);
         logger.info("File saved to: {}", copyLocation.toAbsolutePath());
 
-        //Dosyanın erişilebilir URL'ini oluştur ve döndür
-        //Bu URL, uygulamamızın çalıştığı adrese göre dinamik olarak oluşturur.
+        //Dosyanın erişilebilir URL'ini oluştur ve dön
+        //Bu URL, uygulamamızın çalıştığı adrese göre dinamik olarak oluşturulur..
         return ServletUriComponentsBuilder.fromCurrentContextPath()
-                .path("/uploads/")// app.properties'te yer alan upload-dir ile eşleşmeli.
+                .path("/uploads/")// app.properties'de yer alan upload-dir ile eşleşmeli..
                 .path(fileName)
                 .toUriString();
     }
