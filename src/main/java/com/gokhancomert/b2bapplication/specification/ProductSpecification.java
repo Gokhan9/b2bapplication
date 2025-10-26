@@ -71,7 +71,7 @@ public class ProductSpecification {
             if (minPrice != null) {
                 return criteriaBuilder.greaterThanOrEqualTo(root.get("price"), minPrice);
             }
-            if (minPrice != null) {
+            if (maxPrice != null) {
                 return criteriaBuilder.lessThanOrEqualTo(root.get("price"), maxPrice);
             }
             return criteriaBuilder.conjunction();

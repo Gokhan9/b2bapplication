@@ -10,7 +10,6 @@ import com.gokhancomert.b2bapplication.model.Product;
 import com.gokhancomert.b2bapplication.repository.CategoryRepository;
 import com.gokhancomert.b2bapplication.repository.ProductRepository;
 import com.gokhancomert.b2bapplication.specification.ProductSpecification;
-import jakarta.persistence.criteria.Predicate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
@@ -18,12 +17,8 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
-import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 public class ProductService {
