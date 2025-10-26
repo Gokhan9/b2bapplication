@@ -52,7 +52,7 @@ public class ProductAdminController {
 
     /**
      * Belirli bir ürün için görsel yüklemek ve ürünün imageUrl alanını update eder.
-     * @param "productId" Görselin yükleneceği ürünin ID'si
+     * @param "productId" Görselin yükleneceği ürünün ID'si
      * @param "file" yüklenecek görsel dosyası
      * @return Güncellenmiş ürünün "DTO'su"
      * @throws "IOException" dosya yükleme sırasında bir hata oluşması durumu
