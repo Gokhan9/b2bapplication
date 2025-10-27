@@ -12,7 +12,10 @@ import java.util.Map;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
-    //404 - Not Found
+    /**
+     * 404 - Not Found
+     * @param exception
+     */
     @ExceptionHandler(ResourceNotFoundException.class)
     public ResponseEntity<Map<String, String>> handleResourceNotFoundException(ResourceNotFoundException exception) {
         // Hata mesajını içeren bir Map oluşturur
@@ -24,7 +27,10 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(errorResponse, HttpStatus.NOT_FOUND);
     }
 
-    //400 - Bad Request
+    /**
+     * 400 - Bad Request
+     * @param exception
+     */
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<Map<String, Object>> handleValidationException(MethodArgumentNotValidException exception) {
         Map<String, String> validationErrorResponse = new HashMap<>();
@@ -45,7 +51,10 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
     }
 
-    //401 - Unauthorized
+    /**
+     * 401 - Unauthorized
+     * @param exception
+     */
     @ExceptionHandler(InvalidCredentialsException.class)
     public ResponseEntity<Map<String, String>> handleInvalidCredentialsException(InvalidCredentialsException exception) {
         Map<String, String> invalidCredentialsErrorResponse = Map.of(

@@ -1,4 +1,4 @@
-package com.gokhancomert.b2bapplication;
+package com.gokhancomert.b2bapplication.unit;
 
 import com.gokhancomert.b2bapplication.dto.UserDto;
 import com.gokhancomert.b2bapplication.dto.request.UserCreateRequest;

@@ -1,4 +1,4 @@
-package com.gokhancomert.b2bapplication;
+package com.gokhancomert.b2bapplication.unit;
 
 import com.gokhancomert.b2bapplication.dto.ProductDto;
 import com.gokhancomert.b2bapplication.dto.request.ProductCreateRequest;
@@ -20,7 +20,6 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
-import org.springframework.security.core.parameters.P;
 
 import java.util.Arrays;
 import java.util.Collections;
