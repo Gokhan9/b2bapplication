@@ -29,8 +29,7 @@ import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 public class ProductServiceTest {
@@ -319,5 +318,19 @@ public class ProductServiceTest {
     @Test
     void updateProductImageUrl_whenProductDoesNotExist_shouldThrowResourceNotFoundException() {
 
+        //given
+        Long nonExistentProductId = 999L;
+        String imageUrl = "http://example.com/image.jpg";
+
+        //when
+        when(productRepository.findById(nonExistentProductId)).thenReturn(Optional.empty());
+
+        //then
+        assertThrows(ResourceNotFoundException.class, () -> {
+            productService.updateProductImageUrl(nonExistentProductId,imageUrl);
+        });
+
+        verify(productRepository).findById(nonExistentProductId);
+        verify(productRepository, never()).save(any(Product.class));
     }
 }
