@@ -335,7 +335,7 @@ public class ProductServiceTest {
     }
 
     @Test
-    void incrementProductViewCount_whenProducExists_shouldIncrementViewCountAndSave() {
+    void incrementProductViewCount_whenProductExists_shouldIncrementViewCountAndSave() {
 
         //given
         Long productId = 1L;
@@ -354,5 +354,21 @@ public class ProductServiceTest {
         assertEquals(6L, product.getViewCount());
         verify(productRepository).findById(productId);
         verify(productRepository).save(product);
+    }
+
+    @Test
+    void incrementProductViewCount_whenProductDoesNotExist_shouldDoNothing() {
+
+        //given
+        Long nonExistentProductId = 999L;
+
+        //when
+        when(productRepository.findById(nonExistentProductId)).thenReturn(Optional.empty());
+
+        productService.incrementProductViewCount(nonExistentProductId);
+
+        //then
+        verify(productRepository).findById(nonExistentProductId);
+        verify(productRepository, never()).save(any(Product.class));
     }
 }
