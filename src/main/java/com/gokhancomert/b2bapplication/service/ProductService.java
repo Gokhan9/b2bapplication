@@ -124,7 +124,7 @@ public class ProductService {
     }
 
     /**
-     * Belirli bir ürrünün detaylarını döndürür ve görüntülenme sayısını arttırır.
+     * Belirli bir ürünün detaylarını döndürür ve görüntülenme sayısını arttırır.
      * @param id
      * @return
      */
@@ -132,8 +132,8 @@ public class ProductService {
         logger.info("Attempting to find product with id: {}", id);
         Product product = productRepository.findById(id)
                 .orElseThrow(() -> {
-                    logger.warn("Product not found with id: '{}'" ,id);
-                    return  new ResourceNotFoundException("Product not found with id: " + id);
+                    logger.warn("Product not found with id: '{}'", id);
+                    return new ResourceNotFoundException("Product not found with id: " + id);
                 });
 
         incrementProductViewCount(id);
@@ -164,7 +164,7 @@ public class ProductService {
         //viewcount'a göre azalan sırada sırala
         Pageable sortedPageable = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), Sort.by("viewCount").descending());
         Page<Product> products = productRepository.findAll(sortedPageable);
-        logger.info("Found {} most viewed products.");
+        logger.info("Found {} most viewed products.", pageable.getPageNumber());
         return products.map(productMapper::toDto);
     }
 }

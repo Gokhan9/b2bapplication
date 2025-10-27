@@ -333,4 +333,26 @@ public class ProductServiceTest {
         verify(productRepository).findById(nonExistentProductId);
         verify(productRepository, never()).save(any(Product.class));
     }
+
+    @Test
+    void incrementProductViewCount_whenProducExists_shouldIncrementViewCountAndSave() {
+
+        //given
+        Long productId = 1L;
+
+        Product product = new Product();
+        product.setId(productId);
+        product.setViewCount(5L);
+
+        //when
+        when(productRepository.findById(productId)).thenReturn(Optional.of(product));
+        when(productRepository.save(any(Product.class))).thenReturn(product);
+
+        productService.incrementProductViewCount(productId);
+
+        //then
+        assertEquals(6L, product.getViewCount());
+        verify(productRepository).findById(productId);
+        verify(productRepository).save(product);
+    }
 }
