@@ -20,6 +20,7 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.security.core.parameters.P;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -164,9 +165,6 @@ public class ProductServiceTest {
         assertEquals(expectedDto.getId(), result.getId());
     }
 
-
-
-
     @Test
     void update_whenProductExists_shouldReturnUpdatedProduct() {
 
@@ -239,5 +237,87 @@ public class ProductServiceTest {
         assertThrows(ResourceNotFoundException.class, () -> {
             productService.deleteProductById(nonExistendId);
         });
+    }
+
+    @Test
+    void getMostViewedProducts_shouldReturnPaginatedAndSortedProducts() {
+
+        //given
+        Pageable pageable = PageRequest.of(0, 10);
+
+        Product product1 = new Product();
+        product1.setId(1L);
+        product1.setViewCount(100L);
+
+        Product product2 = new Product();
+        product2.setId(2L);
+        product2.setViewCount(50L);
+
+        List<Product> products = Arrays.asList(product1, product2);
+        Page<Product> productPage = new PageImpl<>(products, pageable, products.size());
+
+        ProductDto dto1 = new ProductDto();
+        dto1.setId(1L);
+        dto1.setViewCount(100L);
+
+        ProductDto dto2 = new ProductDto();
+        dto2.setId(2L);
+        dto2.setViewCount(50L);
+
+        when(productRepository.findAll(any(Pageable.class))).thenReturn(productPage);
+        when(productMapper.toDto(product1)).thenReturn(dto1);
+        when(productMapper.toDto(product2)).thenReturn(dto2);
+
+        //when
+        Page<ProductDto> result = productService.getMostViewedProducts(pageable);
+
+        //then
+        assertNotNull(result);
+        assertEquals(2, result.getTotalElements());
+        assertEquals(1, result.getTotalPages());
+        assertEquals(dto1.getId(), result.getContent().get(0).getId());
+        assertEquals(dto2.getId(), result.getContent().get(1).getId());
+
+        verify(productRepository).findAll(any(Pageable.class));
+    }
+
+    @Test
+    void updateProductImageUrl_whenProductExists_shouldUpdateImageUrl() {
+
+        //given
+        Long productId = 1L;
+        String newImageUrl = "http://example.com/image.jpg";
+        Product existingProduct =  new Product();
+
+        existingProduct.setId(productId);
+        existingProduct.setImageUrl(newImageUrl);
+
+        Product updateProduct = new Product();
+        updateProduct.setId(productId);
+        updateProduct.setImageUrl(newImageUrl);
+
+        ProductDto expectedDto = new ProductDto();
+        expectedDto.setId(productId);
+        expectedDto.setImageUrl(newImageUrl);
+
+        //when
+        when(productRepository.findById(productId)).thenReturn(Optional.of(existingProduct));
+        when(productRepository.save(any(Product.class))).thenReturn(updateProduct);
+        when(productMapper.toDto(updateProduct)).thenReturn(expectedDto);
+
+        ProductDto result = productService.updateProductImageUrl(productId, newImageUrl);
+
+        //then
+        assertNotNull(result);
+        assertEquals(newImageUrl, result.getImageUrl());
+
+        verify(productRepository).findById(productId);
+        verify(productRepository).save(existingProduct);
+        verify(productMapper).toDto(updateProduct);
+    }
+
+    @Test
+    void updateProductImageUrl_whenProductDoesNotExist_shouldThrowResourceNotFoundException() {
+
     }
 }

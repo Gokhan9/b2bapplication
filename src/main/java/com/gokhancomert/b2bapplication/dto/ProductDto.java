@@ -6,6 +6,7 @@ import lombok.Data;
 public class ProductDto {
     private Long id;
 
+    private Long viewCount = 0L;
     private String name;
     private String description;
     private Double price;
