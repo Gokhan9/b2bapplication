@@ -28,7 +28,7 @@ public class SecurityConfig {
 
     //SecurityFilterChain: Spring Security’nin en temel yapı taşıdır. Her gelen HTTP isteği bu filtre zincirinden geçer.
     //HttpSecurity: Bu obje sayesinde hangi endpoint’lere kimlerin erişebileceğini, session yönetimini, csrf ayarlarını vs. yapılandırırız.
-    //@Bean: Bu metodu Spring’e bir güvenlik yapılandırma bean’i olarak kaydeder. Yani Spring uygulama ayağa kalkarken bu ayarları kullanır.
+    //@Bean: Bu metodu Spring’e bir güvenlik yapılandırma bean’i olarak kaydeder. Yani Spring uygulama ayağa kalkarken bu ayarları kullanır..
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
