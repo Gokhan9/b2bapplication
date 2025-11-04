@@ -34,7 +34,10 @@ public class SecurityConfig {
         http
                 .csrf(csrf -> csrf.disable()) //CSRF (Cross-Site Request Forgery) saldırılarına karşı korumadır.
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/auth/**").permitAll()
+                        .requestMatchers("/api/auth/**",
+                        "/swagger-ui.html",
+                        "/swagger-ui-**",
+                        "/v3/api-docs/**").permitAll()
                         .requestMatchers("/api/admin/**").hasRole("ADMIN") //yetki verilen admin erişim sağlar.
                         .requestMatchers("/api/products/**", "/api/categories/**").permitAll() //api'lere herkes erişebilir.
                         .anyRequest().authenticated() //geri kalan tüm endpoint’ler giriş yapmış (token’ı olan) kullanıcı ister.
