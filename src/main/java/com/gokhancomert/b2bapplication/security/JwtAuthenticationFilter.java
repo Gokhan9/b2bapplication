@@ -9,9 +9,13 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
+import org.springframework.util.AntPathMatcher;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
+import java.lang.reflect.Array;
+import java.util.Arrays;
+import java.util.List;
 
 @Component //Spring bunu otomatik olarak bean yapar, böylece security zincirine ekleyebilirsin.
 public class JwtAuthenticationFilter extends OncePerRequestFilter { //OncePerRequestFilter: Spring Security’nin her request için sadece bir kere çalışan özel bir filtresidir.
